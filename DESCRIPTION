@@ -1,0 +1,16 @@
+Package: blockForest
+Type: Package
+Title: Random Forests for Blocks of Clinical and Omics Covariate Data
+Version: 0.1.2
+Date: 2018-04-27
+Author: Roman Hornung, Marvin N. Wright
+Maintainer: Roman Hornung <hornung@ibe.med.uni-muenchen.de>
+Description: TODO
+License: GPL-3
+Imports: Rcpp (>= 0.11.2), Matrix, methods, ipred, rlist, Deducer
+LinkingTo: Rcpp, RcppEigen
+Depends: R (>= 3.1)
+Suggests: survival, testthat, GenABEL
+RoxygenNote: 6.0.1
+NeedsCompilation: yes
+Packaged: 2018-04-27 17:32:16 UTC; hornung
