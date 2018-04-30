@@ -95,6 +95,16 @@ enum PredictionType {
   TERMINALNODES = 2
 };
 
+// Block method
+enum BlockMode {
+  BLOCK_NONE = 0,
+  BLOCK_BLOCK_FOREST = 1,
+  BLOCK_ONE_BLOCK = 2,
+  BLOCK_WEIGHTS_ONLY = 3,
+  BLOCK_SAMPLE_BLOCKS = 4
+};
+const uint MAX_BLOCK_MODE = 4;
+
 // Default values
 const uint DEFAULT_NUM_TREE = 500;
 const uint DEFAULT_NUM_THREADS = 0;

@@ -133,7 +133,7 @@ bool TreeSurvival::findBestSplit(size_t nodeID, std::vector<std::vector<size_t>>
     for (size_t i = 0; i < possible_split_varIDs.size(); ++i) {
       // Get block weight
       double block_weight = 1;
-      if (mtry.size() > 1) {
+      if (block_method > 0 && (block_method == BLOCK_BLOCK_FOREST || block_method == BLOCK_SAMPLE_BLOCKS)) {
         block_weight = (*block_weights)[i];
       }
 
@@ -676,7 +676,7 @@ bool TreeSurvival::findBestSplitExtraTrees(size_t nodeID, std::vector<std::vecto
     for (size_t i = 0; i < possible_split_varIDs.size(); ++i) {
       // Get block weight
       double block_weight = 1;
-      if (mtry.size() > 1) {
+      if (block_method > 0 && (block_method == BLOCK_BLOCK_FOREST || block_method == BLOCK_SAMPLE_BLOCKS)) {
         block_weight = (*block_weights)[i];
       }
 

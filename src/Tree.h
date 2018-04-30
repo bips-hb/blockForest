@@ -53,7 +53,7 @@ public:
       bool sample_with_replacement, bool memory_saving_splitting, SplitRule splitrule,
       std::vector<double>* case_weights, bool keep_inbag, std::vector<double>* sample_fraction, double alpha,
       double minprop, bool holdout, uint num_random_splits, std::vector<std::vector<size_t>>* blocks,
-      std::vector<double>* block_weights);
+      std::vector<double>* block_weights, BlockMode block_method);
 
   virtual void allocateMemory() = 0;
 
@@ -89,6 +89,8 @@ public:
 
 protected:
   void createPossibleSplitVarSubset(std::vector<std::vector<size_t>>& result);
+  void createPossibleSplitVarSubsetOneBlock(std::vector<std::vector<size_t>>& result);
+  void createPossibleSplitVarSubsetSampleBlocks(std::vector<std::vector<size_t>>& result);
 
   bool splitNode(size_t nodeID);
   virtual bool splitNodeInternal(size_t nodeID, std::vector<std::vector<size_t>>& possible_split_varIDs) = 0;
@@ -182,6 +184,7 @@ protected:
   // Block forests
   std::vector<std::vector<size_t>>* blocks;
   std::vector<double>* block_weights;
+  BlockMode block_method;
 
 private:
   DISALLOW_COPY_AND_ASSIGN(Tree);

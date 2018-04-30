@@ -10,9 +10,10 @@ blockForest(formula = NULL, data = NULL, num.trees = 500, mtry = NULL,
   1, 0.632), case.weights = NULL, splitrule = NULL, num.random.splits = 1,
   alpha = 0.5, minprop = 0.1, split.select.weights = NULL,
   always.split.variables = NULL, blocks = NULL, block.weights = NULL,
-  respect.unordered.factors = NULL, scale.permutation.importance = FALSE,
-  keep.inbag = FALSE, holdout = FALSE, quantreg = FALSE,
-  num.threads = NULL, save.memory = FALSE, verbose = TRUE, seed = NULL,
+  block.method = "block_forest", respect.unordered.factors = NULL,
+  scale.permutation.importance = FALSE, keep.inbag = FALSE,
+  holdout = FALSE, quantreg = FALSE, num.threads = NULL,
+  save.memory = FALSE, verbose = TRUE, seed = NULL,
   dependent.variable.name = NULL, status.variable.name = NULL,
   classification = NULL)
 }
@@ -54,6 +55,8 @@ blockForest(formula = NULL, data = NULL, num.trees = 500, mtry = NULL,
 \item{blocks}{Blocks for the 'Block forest' method. A list of numeric vectors.}
 
 \item{block.weights}{Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights.}
+
+\item{block.method}{Block forest method. Options are: 'block_forest' (default), 'one_block_per_split', 'weights_only', 'sample_from_blocks'.}
 
 \item{respect.unordered.factors}{Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details.}
 
