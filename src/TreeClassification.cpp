@@ -168,6 +168,10 @@ bool TreeClassification::findBestSplit(size_t nodeID, std::vector<std::vector<si
 
   // For all possible split variables
   for (size_t i = 0; i < possible_split_varIDs.size(); ++i) {
+    if (possible_split_varIDs[i].empty()) {
+      continue;
+    }
+
     // Get block weight
     double block_weight = 1;
     if (block_method > 0 && (block_method == BLOCK_BLOCK_FOREST || block_method == BLOCK_SAMPLE_BLOCKS)) {
@@ -175,6 +179,11 @@ bool TreeClassification::findBestSplit(size_t nodeID, std::vector<std::vector<si
     }
 
     for (auto& varID : possible_split_varIDs[i]) {
+      // Get weight for "weights_only"
+      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+        block_weight = (*block_weights)[(*var_in_block)[varID]];
+      }
+
       // Find best split value, if ordered consider all values as split values, else all 2-partitions
       if (data->isOrderedVariable(varID)) {
 
@@ -477,6 +486,15 @@ bool TreeClassification::findBestSplitExtraTrees(size_t nodeID,
     }
 
     for (auto& varID : possible_split_varIDs[i]) {
+      if (possible_split_varIDs[i].empty()) {
+        continue;
+      }
+
+      // Get weight for "weights_only"
+      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+        block_weight = (*block_weights)[(*var_in_block)[varID]];
+      }
+
       // Find best split value, if ordered consider all values as split values, else all 2-partitions
       if (data->isOrderedVariable(varID)) {
         findBestSplitValueExtraTrees(nodeID, varID, num_classes, class_counts, num_samples_node, best_value, best_varID,

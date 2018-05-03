@@ -180,6 +180,15 @@ bool TreeProbability::findBestSplit(size_t nodeID, std::vector<std::vector<size_
     }
 
     for (auto& varID : possible_split_varIDs[i]) {
+      if (possible_split_varIDs[i].empty()) {
+        continue;
+      }
+
+      // Get weight for "weights_only"
+      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+        block_weight = (*block_weights)[(*var_in_block)[varID]];
+      }
+
       // Find best split value, if ordered consider all values as split values, else all 2-partitions
       if (data->isOrderedVariable(varID)) {
 
@@ -478,6 +487,15 @@ bool TreeProbability::findBestSplitExtraTrees(size_t nodeID, std::vector<std::ve
     }
 
     for (auto& varID : possible_split_varIDs[i]) {
+      if (possible_split_varIDs[i].empty()) {
+        continue;
+      }
+
+      // Get weight for "weights_only"
+      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+        block_weight = (*block_weights)[(*var_in_block)[varID]];
+      }
+
       // Find best split value, if ordered consider all values as split values, else all 2-partitions
       if (data->isOrderedVariable(varID)) {
         findBestSplitValueExtraTrees(nodeID, varID, num_classes, class_counts, num_samples_node, best_value, best_varID,

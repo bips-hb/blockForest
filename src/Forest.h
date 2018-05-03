@@ -235,6 +235,7 @@ protected:
   std::vector<std::vector<size_t>> blocks;
   std::vector<std::vector<double>> block_weights;
   BlockMode block_method;
+  std::vector<size_t> var_in_block; // For each variable the block it is in, only needed for "weight_only"
 
   // Random number generator
   std::mt19937_64 random_number_generator;

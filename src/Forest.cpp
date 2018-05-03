@@ -200,6 +200,17 @@ void Forest::initR(std::string dependent_variable_name, Data* input_data, std::v
   this->blocks = blocks;
   this->block_weights = block_weights;
   this->block_method = block_method;
+
+  // For "weights_only" method get blocks for each var
+  if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+    var_in_block = std::vector<size_t>(num_variables);
+    for (size_t i = 0; i < blocks.size(); ++i) {
+      for (size_t j = 0; j < blocks[i].size(); ++j) {
+        size_t varID = blocks[i][j];
+        var_in_block[varID] = i;
+      }
+    }
+  }
 }
 
 void Forest::init(std::string dependent_variable_name, MemoryMode memory_mode, Data* input_data,
@@ -453,7 +464,7 @@ void Forest::grow() {
     trees[i]->init(data, mtry, dependent_varID, num_samples, tree_seed, &deterministic_varIDs, &split_select_varIDs,
         tree_split_select_weights, importance_mode, min_node_size, sample_with_replacement, memory_saving_splitting,
         splitrule, &case_weights, keep_inbag, &sample_fraction, alpha, minprop, holdout, num_random_splits, &blocks,
-        block_weight_pointer, block_method);
+        block_weight_pointer, block_method, &var_in_block);
   }
 
 // Init variable importance
