@@ -158,11 +158,19 @@ bool TreeRegression::findBestSplit(size_t nodeID, std::vector<std::vector<size_t
   for (size_t i = 0; i < possible_split_varIDs.size(); ++i) {
     // Get block weight
     double block_weight = 1;
-    if (mtry.size() > 1) {
+    if (block_method > 0 && (block_method == BLOCK_BLOCK_FOREST || block_method == BLOCK_SAMPLE_BLOCKS)) {
       block_weight = (*block_weights)[i];
     }
 
     for (auto& varID : possible_split_varIDs[i]) {
+      if (possible_split_varIDs[i].empty()) {
+        continue;
+      }
+
+      // Get weight for "weights_only"
+      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+        block_weight = (*block_weights)[(*var_in_block)[varID]];
+      }
 
       // Find best split value, if ordered consider all values as split values, else all 2-partitions
       if (data->isOrderedVariable(varID)) {
@@ -259,7 +267,8 @@ void TreeRegression::findBestSplitValueSmallQ(size_t nodeID, size_t varID, doubl
 
     double sum_right = sums_right[i];
     double sum_left = sum_node - sum_right;
-    double decrease = block_weight * (sum_left * sum_left / (double) n_left + sum_right * sum_right / (double) n_right[i]);
+    double decrease = block_weight
+        * (sum_left * sum_left / (double) n_left + sum_right * sum_right / (double) n_right[i]);
 
     // If better than before, use this
     if (decrease > best_decrease) {
@@ -511,11 +520,19 @@ bool TreeRegression::findBestSplitExtraTrees(size_t nodeID, std::vector<std::vec
   for (size_t i = 0; i < possible_split_varIDs.size(); ++i) {
     // Get block weight
     double block_weight = 1;
-    if (mtry.size() > 1) {
+    if (block_method > 0 && (block_method == BLOCK_BLOCK_FOREST || block_method == BLOCK_SAMPLE_BLOCKS)) {
       block_weight = (*block_weights)[i];
     }
 
     for (auto& varID : possible_split_varIDs[i]) {
+      if (possible_split_varIDs[i].empty()) {
+        continue;
+      }
+
+      // Get weight for "weights_only"
+      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+        block_weight = (*block_weights)[(*var_in_block)[varID]];
+      }
 
       // Find best split value, if ordered consider all values as split values, else all 2-partitions
       if (data->isOrderedVariable(varID)) {
@@ -606,7 +623,8 @@ void TreeRegression::findBestSplitValueExtraTrees(size_t nodeID, size_t varID, d
 
     double sum_right = sums_right[i];
     double sum_left = sum_node - sum_right;
-    double decrease = block_weight * (sum_left * sum_left / (double) n_left + sum_right * sum_right / (double) n_right[i]);
+    double decrease = block_weight
+        * (sum_left * sum_left / (double) n_left + sum_right * sum_right / (double) n_right[i]);
 
     // If better than before, use this
     if (decrease > best_decrease) {

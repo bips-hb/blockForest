@@ -36,7 +36,7 @@ Tree::Tree() :
         0), split_select_weights(0), case_weights(0), oob_sampleIDs(0), holdout(false), keep_inbag(false), data(0), variable_importance(
         0), importance_mode(DEFAULT_IMPORTANCE_MODE), sample_with_replacement(true), sample_fraction(0), memory_saving_splitting(
         false), splitrule(DEFAULT_SPLITRULE), alpha(DEFAULT_ALPHA), minprop(DEFAULT_MINPROP), num_random_splits(
-        DEFAULT_NUM_RANDOM_SPLITS), blocks(0), block_weights(0) {
+        DEFAULT_NUM_RANDOM_SPLITS), blocks(0), block_weights(0), block_method(BLOCK_NONE), var_in_block(0) {
 }
 
 Tree::Tree(std::vector<std::vector<size_t>>& child_nodeIDs, std::vector<size_t>& split_varIDs,
@@ -46,7 +46,7 @@ Tree::Tree(std::vector<std::vector<size_t>>& child_nodeIDs, std::vector<size_t>&
         child_nodeIDs), oob_sampleIDs(0), holdout(false), keep_inbag(false), data(0), variable_importance(0), importance_mode(
         DEFAULT_IMPORTANCE_MODE), sample_with_replacement(true), sample_fraction(0), memory_saving_splitting(false), splitrule(
         DEFAULT_SPLITRULE), alpha(DEFAULT_ALPHA), minprop(DEFAULT_MINPROP), num_random_splits(
-        DEFAULT_NUM_RANDOM_SPLITS), blocks(0), block_weights(0) {
+        DEFAULT_NUM_RANDOM_SPLITS), blocks(0), block_weights(0), block_method(BLOCK_NONE), var_in_block(0) {
 }
 
 Tree::~Tree() {
@@ -57,7 +57,8 @@ void Tree::init(Data* data, std::vector<uint> mtry, size_t dependent_varID, size
     std::vector<double>* split_select_weights, ImportanceMode importance_mode, uint min_node_size,
     bool sample_with_replacement, bool memory_saving_splitting, SplitRule splitrule, std::vector<double>* case_weights,
     bool keep_inbag, std::vector<double>* sample_fraction, double alpha, double minprop, bool holdout,
-    uint num_random_splits, std::vector<std::vector<size_t>>* blocks, std::vector<double>* block_weights) {
+    uint num_random_splits, std::vector<std::vector<size_t>>* blocks, std::vector<double>* block_weights,
+    BlockMode block_method, std::vector<size_t>* var_in_block) {
 
   this->data = data;
   this->mtry = mtry;
@@ -89,6 +90,8 @@ void Tree::init(Data* data, std::vector<uint> mtry, size_t dependent_varID, size
   this->num_random_splits = num_random_splits;
   this->blocks = blocks;
   this->block_weights = block_weights;
+  this->block_method = block_method;
+  this->var_in_block = var_in_block;
 }
 
 void Tree::grow(std::vector<double>* variable_importance) {
@@ -263,7 +266,7 @@ void Tree::createPossibleSplitVarSubset(std::vector<std::vector<size_t>>& result
 
     // Randomly add non-deterministic variables (according to weights if needed)
     if (split_select_weights->empty()) {
-      if (blocks->size() > 0) {
+      if (blocks->size() > 0 & block_method != BLOCK_WEIGHTS_ONLY) {
         // Draw without replacement from block
         std::vector<size_t> empty_vec;
         drawWithoutReplacementSkip(block_vars, random_number_generator, (*blocks)[i].size(), empty_vec, mtry[i]);
@@ -283,17 +286,124 @@ void Tree::createPossibleSplitVarSubset(std::vector<std::vector<size_t>>& result
 
     result.push_back(block_vars);
   }
+}
 
+void Tree::createPossibleSplitVarSubsetOneBlock(std::vector<std::vector<size_t>>& result) {
 
+  size_t num_vars = data->getNumCols();
+
+  // For corrected Gini importance add dummy variables
+  if (importance_mode == IMP_GINI_CORRECTED) {
+    num_vars += data->getNumCols() - data->getNoSplitVariables().size();
+  }
+
+  // Just select one block
+  std::uniform_int_distribution<size_t> unif_dist(0, mtry.size() - 1);
+  size_t selected_block = unif_dist(random_number_generator);
+
+  std::vector<size_t> block_vars = std::vector<size_t>();
+  block_vars.reserve(mtry[selected_block]);
+
+  // Always use deterministic variables
+  std::copy(deterministic_varIDs->begin(), deterministic_varIDs->end(), std::inserter(block_vars, block_vars.end()));
+
+  // Randomly add non-deterministic variables (according to weights if needed)
+  if (split_select_weights->empty()) {
+    if (blocks->size() > 0) {
+      // Draw without replacement from block
+      std::vector<size_t> empty_vec;
+      drawWithoutReplacementSkip(block_vars, random_number_generator, (*blocks)[selected_block].size(), empty_vec,
+          mtry[selected_block]);
+      for (size_t j = 0; j < block_vars.size(); ++j) {
+        block_vars[j] = (*blocks)[selected_block][block_vars[j]];
+      }
+    } else {
+      drawWithoutReplacementSkip(block_vars, random_number_generator, num_vars, data->getNoSplitVariables(),
+          mtry[selected_block]);
+    }
+
+  } else {
+    // No corrected Gini importance supported for weighted splitting
+    size_t num_draws = mtry[selected_block] - block_vars.size();
+    drawWithoutReplacementWeighted(block_vars, random_number_generator, *split_select_varIDs, num_draws,
+        *split_select_weights);
+  }
+
+  result.push_back(block_vars);
+
+}
+
+void Tree::createPossibleSplitVarSubsetSampleBlocks(std::vector<std::vector<size_t>>& result) {
+
+  size_t num_vars = data->getNumCols();
+
+  // For corrected Gini importance add dummy variables
+  if (importance_mode == IMP_GINI_CORRECTED) {
+    num_vars += data->getNumCols() - data->getNoSplitVariables().size();
+  }
+
+  // Sample blocks
+  std::vector<bool> sampled_blocks = std::vector<bool>(mtry.size(), false);
+  bool one_block_true = false;
+  std::bernoulli_distribution sample_dist(0.5);
+  while (!one_block_true) {
+    for (size_t i = 0; i < mtry.size(); ++i) {
+      if (sample_dist(random_number_generator)) {
+        sampled_blocks[i] = true;
+        one_block_true = true;
+      }
+    }
+  }
+
+  for (size_t i = 0; i < mtry.size(); ++i) {
+    std::vector<size_t> block_vars = std::vector<size_t>();
+
+    if (sampled_blocks[i]) {
+      block_vars.reserve(mtry[i]);
+
+      // Always use deterministic variables
+      std::copy(deterministic_varIDs->begin(), deterministic_varIDs->end(),
+          std::inserter(block_vars, block_vars.end()));
+
+      // Randomly add non-deterministic variables (according to weights if needed)
+      if (split_select_weights->empty()) {
+        if (blocks->size() > 0) {
+          // Draw without replacement from block
+          std::vector<size_t> empty_vec;
+          drawWithoutReplacementSkip(block_vars, random_number_generator, (*blocks)[i].size(), empty_vec, mtry[i]);
+          for (size_t j = 0; j < block_vars.size(); ++j) {
+            block_vars[j] = (*blocks)[i][block_vars[j]];
+          }
+        } else {
+          drawWithoutReplacementSkip(block_vars, random_number_generator, num_vars, data->getNoSplitVariables(),
+              mtry[i]);
+        }
+
+      } else {
+        // No corrected Gini importance supported for weighted splitting
+        size_t num_draws = mtry[i] - block_vars.size();
+        drawWithoutReplacementWeighted(block_vars, random_number_generator, *split_select_varIDs, num_draws,
+            *split_select_weights);
+      }
+    }
+
+    result.push_back(block_vars);
+  }
 }
 
 bool Tree::splitNode(size_t nodeID) {
 
   // Select random subset of variables to possibly split at
   std::vector<std::vector<size_t>> possible_split_varIDs;
-  createPossibleSplitVarSubset(possible_split_varIDs);
+  if (block_method == BLOCK_ONE_BLOCK) {
+    createPossibleSplitVarSubsetOneBlock(possible_split_varIDs);
+  } else if (block_method == BLOCK_SAMPLE_BLOCKS) {
+    createPossibleSplitVarSubsetSampleBlocks(possible_split_varIDs);
+  } else {
+    createPossibleSplitVarSubset(possible_split_varIDs);
+  }
 
-  // Call subclass method, sets split_varIDs and split_values
+// Call subclass method, sets split_varIDs and split_values
   bool stop = splitNodeInternal(nodeID, possible_split_varIDs);
   if (stop) {
     // Terminal node

@@ -39,6 +39,7 @@
 ##' @param always.split.variables Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.
 ##' @param blocks Blocks for the 'Block forest' method. A list of numeric vectors. 
 ##' @param block.weights Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights.
+##' @param block.method Block forest method. Options are: 'block_forest' (default), 'one_block_per_split', 'weights_only', 'sample_from_blocks'.
 ##' @param respect.unordered.factors Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details. 
 ##' @param scale.permutation.importance Scale permutation importance by standard error as in (Breiman 2001). Only applicable if permutation variable importance mode selected.
 ##' @param keep.inbag Save how often observations are in-bag in each tree. 
@@ -138,7 +139,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
                         case.weights = NULL, splitrule = NULL, 
                         num.random.splits = 1, alpha = 0.5, minprop = 0.1,
                         split.select.weights = NULL, always.split.variables = NULL,
-                        blocks = NULL, block.weights = NULL,
+                        blocks = NULL, block.weights = NULL, block.method = "block_forest",
                         respect.unordered.factors = NULL,
                         scale.permutation.importance = FALSE,
                         keep.inbag = FALSE, holdout = FALSE,
@@ -596,16 +597,27 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   
   ## Block forests
   if (!is.null(blocks)) {
+    if (block.method == "block_forest") {
+      block.method <- 1
+    } else if (block.method == "one_block_per_split") {
+      block.method <- 2
+    } else if (block.method == "weights_only") {
+      block.method <- 3
+    } else if (block.method == "sample_from_blocks") {
+      block.method <- 4
+    } else {
+      stop("Error: Unknown value for 'block.method'.") 
+    }
     if (is.null(formula)) {
       stop("Error: Block forests only allowed with the formula interface.")
     }
     if (class(blocks) != "list" || !all(sapply(blocks, is.numeric))) {
       stop("Error: The 'blocks' argument is no list of numeric vectors.")
     }
-    if (length(mtry) != length(blocks)) {
+    if (length(mtry) != length(blocks) & block.method != 3) {
       stop("Error: Length of 'blocks' and 'mtry' arguments not matching.")
     }
-    if (!all(sapply(block.weights, is.numeric))) {
+    if (!all(sapply(block.weights, is.numeric)) & block.method != 2) {
       stop("Error: Only numeric values accepted for 'block.weights'.")
     }
     if (is.list(block.weights)) {
@@ -615,11 +627,17 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
       if (any(sapply(block.weights, length) != length(blocks))) {
         stop("Error: Length of 'blocks' and 'block.weights' arguments not matching.")
       }
-    } else {
+    } else if (block.method != 2) {
       if (length(block.weights) != length(blocks)) {
         stop("Error: Length of 'blocks' and 'block.weights' arguments not matching.")
       } 
       block.weights <- list(block.weights)
+    }
+    if (block.method == 2 & !is.null(block.weights)) {
+      stop("Error: Argument 'block.weights' not used in 'one_block_per_split' method.")
+    }
+    if (block.method == 3 & (!is.numeric(mtry) | length(mtry) > 1)) {
+      stop("Error: Single value for 'mtry' expected in 'weights_only' method.")
     }
     if (any(sapply(blocks, function(x) {any(round(x) != x)}))) {
       stop("Error: The 'blocks' argument contains non-integers.")
@@ -649,6 +667,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     }
     block.weights <- list()
     blocks <- list()
+    block.method <- 0
   }
 
   ## Prediction mode always false. Use predict.blockForest() method.
@@ -682,7 +701,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
                       save.memory, splitrule.num, case.weights, use.case.weights, predict.all, 
                       keep.inbag, sample.fraction, alpha, minprop, holdout, prediction.type, 
                       num.random.splits, sparse.data, use.sparse.data, 
-                      blocks, block.weights)
+                      blocks, block.weights, block.method)
   
   if (length(result) == 0) {
     stop("User interrupt or internal error.")

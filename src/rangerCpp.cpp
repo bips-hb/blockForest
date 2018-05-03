@@ -54,7 +54,7 @@ Rcpp::List rangerCpp(uint treetype, std::string dependent_variable_name,
     std::vector<double>& case_weights, bool use_case_weights, bool predict_all, 
     bool keep_inbag, std::vector<double>& sample_fraction, double alpha, double minprop, bool holdout, uint prediction_type_r, 
     uint num_random_splits, Eigen::SparseMatrix<double> sparse_data, bool use_sparse_data, 
-    Rcpp::List blocks, Rcpp::List block_weights) {
+    Rcpp::List blocks, Rcpp::List block_weights, uint block_method_r) {
 
   Rcpp::List result;
   Forest* forest = 0;
@@ -84,6 +84,7 @@ Rcpp::List rangerCpp(uint treetype, std::string dependent_variable_name,
     if (block_weights.size() > 0) {
       block_weight_vec = Rcpp::as< std::vector<std::vector<double>> >(block_weights);
     }
+    BlockMode block_method = (BlockMode) block_method_r;
 
     std::ostream* verbose_out;
     if (verbose) {
@@ -142,7 +143,7 @@ Rcpp::List rangerCpp(uint treetype, std::string dependent_variable_name,
         importance_mode, min_node_size, split_select_weights, always_split_variable_names, status_variable_name,
         prediction_mode, sample_with_replacement, unordered_variable_names, save_memory, splitrule, case_weights, 
         predict_all, keep_inbag, sample_fraction, alpha, minprop, holdout, prediction_type, num_random_splits, 
-        blocks_vec, block_weight_vec);
+        blocks_vec, block_weight_vec, block_method);
 
     // Load forest object if in prediction mode
     if (prediction_mode) {

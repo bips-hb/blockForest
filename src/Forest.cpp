@@ -49,7 +49,7 @@ Forest::Forest() :
         true), memory_saving_splitting(false), splitrule(DEFAULT_SPLITRULE), predict_all(false), keep_inbag(false), sample_fraction(
         { 1 }), holdout(false), prediction_type(DEFAULT_PREDICTIONTYPE), num_random_splits(DEFAULT_NUM_RANDOM_SPLITS), alpha(
         DEFAULT_ALPHA), minprop(DEFAULT_MINPROP), num_threads(DEFAULT_NUM_THREADS), data(0), overall_prediction_error(
-        0), importance_mode(DEFAULT_IMPORTANCE_MODE), progress(0) {
+        0), importance_mode(DEFAULT_IMPORTANCE_MODE), progress(0), block_method(BLOCK_NONE) {
 }
 
 Forest::~Forest() {
@@ -165,7 +165,7 @@ void Forest::initR(std::string dependent_variable_name, Data* input_data, std::v
     std::vector<std::string>& unordered_variable_names, bool memory_saving_splitting, SplitRule splitrule,
     std::vector<double>& case_weights, bool predict_all, bool keep_inbag, std::vector<double>& sample_fraction,
     double alpha, double minprop, bool holdout, PredictionType prediction_type, uint num_random_splits,
-    std::vector<std::vector<size_t>>& blocks, std::vector<std::vector<double>>& block_weights) {
+    std::vector<std::vector<size_t>>& blocks, std::vector<std::vector<double>>& block_weights, BlockMode block_method) {
 
   this->verbose_out = verbose_out;
 
@@ -199,6 +199,18 @@ void Forest::initR(std::string dependent_variable_name, Data* input_data, std::v
   // Block forests
   this->blocks = blocks;
   this->block_weights = block_weights;
+  this->block_method = block_method;
+
+  // For "weights_only" method get blocks for each var
+  if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+    var_in_block = std::vector<size_t>(num_variables);
+    for (size_t i = 0; i < blocks.size(); ++i) {
+      for (size_t j = 0; j < blocks[i].size(); ++j) {
+        size_t varID = blocks[i][j];
+        var_in_block[varID] = i;
+      }
+    }
+  }
 }
 
 void Forest::init(std::string dependent_variable_name, MemoryMode memory_mode, Data* input_data,
@@ -452,7 +464,7 @@ void Forest::grow() {
     trees[i]->init(data, mtry, dependent_varID, num_samples, tree_seed, &deterministic_varIDs, &split_select_varIDs,
         tree_split_select_weights, importance_mode, min_node_size, sample_with_replacement, memory_saving_splitting,
         splitrule, &case_weights, keep_inbag, &sample_fraction, alpha, minprop, holdout, num_random_splits, &blocks,
-        block_weight_pointer);
+        block_weight_pointer, block_method, &var_in_block);
   }
 
 // Init variable importance
