@@ -54,7 +54,7 @@ blockForest(formula = NULL, data = NULL, num.trees = 500, mtry = NULL,
 
 \item{blocks}{Blocks for the 'Block forest' method. A list of numeric vectors.}
 
-\item{block.weights}{Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights.}
+\item{block.weights}{Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='one_block_per_split' these are the block sample probabilities.}
 
 \item{block.method}{Block forest method. Options are: 'block_forest' (default), 'one_block_per_split', 'weights_only', 'sample_from_blocks'.}
 

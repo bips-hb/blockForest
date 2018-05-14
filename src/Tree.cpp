@@ -297,9 +297,9 @@ void Tree::createPossibleSplitVarSubsetOneBlock(std::vector<std::vector<size_t>>
     num_vars += data->getNumCols() - data->getNoSplitVariables().size();
   }
 
-  // Just select one block
-  std::uniform_int_distribution<size_t> unif_dist(0, mtry.size() - 1);
-  size_t selected_block = unif_dist(random_number_generator);
+  // Just select one block (probability given by block weights
+  std::discrete_distribution<> weighted_dist(block_weights->begin(), block_weights->end());
+  size_t selected_block = weighted_dist(random_number_generator);
 
   std::vector<size_t> block_vars = std::vector<size_t>();
   block_vars.reserve(mtry[selected_block]);

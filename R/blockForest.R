@@ -38,7 +38,7 @@
 ##' @param split.select.weights Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used.  
 ##' @param always.split.variables Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.
 ##' @param blocks Blocks for the 'Block forest' method. A list of numeric vectors. 
-##' @param block.weights Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights.
+##' @param block.weights Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='one_block_per_split' these are the block sample probabilities.
 ##' @param block.method Block forest method. Options are: 'block_forest' (default), 'one_block_per_split', 'weights_only', 'sample_from_blocks'.
 ##' @param respect.unordered.factors Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details. 
 ##' @param scale.permutation.importance Scale permutation importance by standard error as in (Breiman 2001). Only applicable if permutation variable importance mode selected.
@@ -617,7 +617,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     if (length(mtry) != length(blocks) & block.method != 3) {
       stop("Error: Length of 'blocks' and 'mtry' arguments not matching.")
     }
-    if (!all(sapply(block.weights, is.numeric)) & block.method != 2) {
+    if (!all(sapply(block.weights, is.numeric))) {
       stop("Error: Only numeric values accepted for 'block.weights'.")
     }
     if (is.list(block.weights)) {
@@ -627,14 +627,11 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
       if (any(sapply(block.weights, length) != length(blocks))) {
         stop("Error: Length of 'blocks' and 'block.weights' arguments not matching.")
       }
-    } else if (block.method != 2) {
+    } else {
       if (length(block.weights) != length(blocks)) {
         stop("Error: Length of 'blocks' and 'block.weights' arguments not matching.")
       } 
       block.weights <- list(block.weights)
-    }
-    if (block.method == 2 & !is.null(block.weights)) {
-      stop("Error: Argument 'block.weights' not used in 'one_block_per_split' method.")
     }
     if (block.method == 3 & (!is.numeric(mtry) | length(mtry) > 1)) {
       stop("Error: Single value for 'mtry' expected in 'weights_only' method.")
