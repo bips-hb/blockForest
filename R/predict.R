@@ -288,6 +288,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
   num.random.splits <- 1
   blocks <- list()
   block.weights <- list()
+  block.method <- 1
   
   ## Use sparse matrix
   if ("dgCMatrix" %in% class(data.final)) {
@@ -309,7 +310,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
                       case.weights, use.case.weights, predict.all, keep.inbag, sample.fraction,
                       alpha, minprop, holdout, prediction.type, 
                       num.random.splits, sparse.data, use.sparse.data,
-                      blocks, block.weights)
+                      blocks, block.weights, block.method)
 
   if (length(result) == 0) {
     stop("User interrupt or internal error.")
