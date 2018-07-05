@@ -2,64 +2,195 @@
 % Please edit documentation in R/blockfor.R
 \name{blockfor}
 \alias{blockfor}
-\title{blockfor}
+\title{Random Forest variants for multi-omics covariate data}
 \usage{
-blockfor(X, y, num_trees = 50, mtrys = NULL, min_node_size = NULL,
-  replace = TRUE, probability = FALSE, splitrule = NULL, block,
-  num_treesorder = 500, nsets = 100, num_treesoptim = 100)
+blockfor(X, y, block, block.method, num_trees = 2000, mtry = NULL,
+  min_node_size = NULL, replace = TRUE, sample.fraction = ifelse(replace,
+  1, 0.632), splitrule = NULL, nsets = 300, num_treesoptim = 1500,
+  num.threads = NULL)
 }
 \arguments{
-\item{X}{matrix. covariate matrix. observations in rows, variables in columns.}
+\item{X}{covariate matrix. observations in rows, variables in columns.}
 
-\item{y}{target variable. See 'Example.R'.}
+\item{y}{target variable. If the outcome is binary, this is a factor with
+two levels. If the outcome is metric, this is a numeric vector. If the outcome
+is a survival outcome, this is a matrix with two columns, where the first column
+contains the vector of survival/censoring times (one for each observation) and the second column contains
+the status variable, that has the value '1' if the corresponding time is
+a survival time and '0' if that time is a censoring time.}
 
-\item{num_trees}{Number of trees in block forest.}
+\item{block}{A list of length equal to the number M of blocks considered. Each
+entry contains the vector of column indices in 'X' of the covariates in one of the M blocks.}
 
-\item{mtrys}{Vector of length equal to the number of blocks. For each block: number of variables to possibly split at in each node. Leave unspecified.}
+\item{block.method}{Forest variant to use. One of the following: "block_select_weights", "weights_only", "block_forest", "one_block_per_split", "sample_from_blocks".}
+
+\item{num_trees}{Number of trees in the forest.}
+
+\item{mtry}{This is either a number specifying the number of variables sampled for each
+split from all variables (for variants "weights_only" and "block_select_weights")
+or a vector of length equal to the number of blocks, where the m-th entry of the
+vector gives the number of variables to sample from block m (for variants "block_forest", "one_block_per_split", and "sample_from_blocks").
+The default values are sqrt(p_1) + sqrt(p_2) + ... sqrt(p_M) and (sqrt(p_1), sqrt(p_2), ..., sqrt(p_M)), respectively,
+where p_m denotes the number of variables in the m-th block (m = 1, ..., M).}
 
 \item{min_node_size}{Minimal node size. Default 1 for classification, 5 for regression and 3 for survival.}
 
 \item{replace}{Sample with replacement. Default TRUE.}
 
-\item{probability}{Grow a probability forest. Default FALSE.}
+\item{sample.fraction}{Fraction of observations to sample. Default is 1 for sampling with replacement and 0.632 for sampling without replacement. For classification, this can be a vector of class-specific values.}
 
-\item{splitrule}{Splitrule to use in trees. Default "Gini" for classification forests, "Variance" for regression and probability forests and "Logrank" for survival forests.}
+\item{splitrule}{Splitrule to use in trees. Default "gini" for binary outcome, "variance" for metric outcome and "logrank" for survival outcome.}
 
-\item{block}{list. A list of length equal to the number M of blocks considered. Each
-entry contains the vector of column indices in 'X' of the covariates in one of the M blocks.}
+\item{nsets}{Number of sets of tuning parameter values generated randomly in the optimization of the tuning parameters.
+Each variant has a tuning parameter for each block, that is, there are M tuning parameters for each variant.
+These tuning parameters are optimized in the following way: 1. Generate random sets of tuning parameter values
+and measure there adequateness: For j = 1,..., nsets: a) Generate a random set of tuning parameter values;
+b) Construct a forest (with num_treesoptim trees) using the set of tuning parameter values generated in a);
+c) Record the out-of-bag (OOB) estimated prediction error of the forest constructed in b); 2. Use the set of tuning 
+parameter values generated in 1. that is associated with the smallest OOB estimated prediction error.}
 
-\item{num_treesorder}{B_order in Supplementary Data}
+\item{num_treesoptim}{Number of trees in each forest constructed during the optimization of the tuning
+parameter values, see 'nsets' for details.}
 
-\item{nsets}{N_sets in Supplementary Data}
-
-\item{num_treesoptim}{B_optim in Supplementary Data}
+\item{num.threads}{Number of threads. Default is number of CPUs available (adopted from ranger).}
+}
+\value{
+\code{blockfor} returns a list containing the following components: 
+\item{forest}{ object of class \code{"blockForest"}. Constructed forest.  }
+\item{cvalues}{ vector of length M. Optimized tuning parameter value for each block. }
+\item{biased_oob_error_donotuse}{ numeric. OOB estimated prediction error. NOTE: This estimate should not be used, because it is (highly) optimistic (i.e, too small), because the data set was used twice - for optimizing the tuning parameter values and for estimating the prediction error. Instead, cross-validation should be used to estimate the prediction error. }
 }
 \description{
-Implements Random Forests (Breiman 2001) with emphasis on simplicity. 
-Uses reference classes and only plain \code{R}. 
-Not optimized for computation speed. 
-Allows rapid prototyping of RF-type algorithms.
+Implements five Random Forest variants suitable for the prediction
+of binary, survival and metric outcomes using multi-omics data, that is,
+data for which there exist measurements of different types of omics data
+and clinical data for each patient. For example, for the task of predicting
+survival for each patient there might be available
+clinical covariates, gene expression measurements, methylation measurements,
+and copy number variation measurements. \cr
+The group of covariates corresponding to one specific data type is denoted as a 'block'. \cr
+Each of the five variants uses a different split selection algorithm.
+They are denoted as "block_select_weights", "weights_only", "block_forest", "one_block_per_split", and "sample_from_blocks". \cr
+They will subject to an upcoming publication by Roman Hornung and
+Marvin N. Wright. \cr
+Note that this R package is a fork of the R package ranger.
+The code is moreover strongly based on the plain R Random Forest implementation
+simpleRF by Marvin N. Wright that uses reference classes.
 }
 \examples{
-\donttest{
-library(blockForest)
+# NOTE: There is no association between covariates and response for the
+# simulated data below.
+# Moreover, the input parameters of blockfor() are highly unrealistic
+# (e.g., nsets = 10 is specified much too small).
+# The purpose of the shown examples is merely to illustrate the
+# application of blockfor().
 
-# Classification
-blockfor(Species ~ ., iris)
 
-# Prediction
-train_idx <- sample(nrow(iris), 2/3 * nrow(iris))
-iris_train <- iris[train_idx, ]
-iris_test <- iris[-train_idx, ]
-rf_iris <- blockfor(Species ~ ., data = iris_train)
-pred_iris <- rf_iris$predict(iris_test)
-table(iris_test$Species, pred_iris)
-}
+# Generate data:
+################
+
+set.seed(1234)
+
+# Covariate matrix:
+X <- cbind(matrix(nrow=40, ncol=5, data=rnorm(40*5)), 
+           matrix(nrow=40, ncol=30, data=rnorm(40*30, mean=1, sd=2)),
+           matrix(nrow=40, ncol=100, data=rnorm(40*100, mean=2, sd=3)))
+
+# Block variable (list):
+block <- rep(1:3, times=c(5, 30, 100))
+block <- lapply(1:3, function(x) which(block==x))
+
+# Binary outcome:
+ybin <- factor(sample(c(0,1), size=40, replace=TRUE), levels=c(0,1))
+
+# Survival outcome:
+ysurv <- cbind(rnorm(40), sample(c(0,1), size=40, replace=TRUE))
+
+
+
+
+# Application of the five different variants in the case of a binary outcome:
+#############################################################################
+
+blockforobj <- blockfor(X, ybin, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "block_select_weights")
+# Tuning parameter estimates (see the upcoming publication by Roman Hornung
+# and Marvin N. Wright):
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ybin, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "weights_only")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ybin, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "block_forest")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ybin, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "one_block_per_split")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ybin, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "sample_from_blocks")
+blockforobj$cvalues
+
+
+
+
+
+# Application of the five different variants in the case of a survival outcome:
+###############################################################################
+
+blockforobj <- blockfor(X, ysurv, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "block_select_weights")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ysurv, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "weights_only")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ysurv, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "block_forest")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ysurv, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "one_block_per_split")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ysurv, num_trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+                        block.method = "sample_from_blocks")
+blockforobj$cvalues
 
 }
 \references{
 Breiman, L. (2001). Random forests. Mach Learn, 45(1), 5-32. \cr
 }
 \author{
-Marvin N. Wright
+Roman Hornung, Marvin N. Wright
 }

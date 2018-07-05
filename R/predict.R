@@ -53,6 +53,7 @@
 ##'       \code{treetype}    \tab Type of forest/tree. Classification, regression or survival. \cr
 ##'       \code{num.samples}     \tab Number of samples.
 ##'   }
+##'
 ##' @references
 ##' \itemize{
 ##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.
@@ -438,11 +439,10 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
   return(result)
 }
 
-##' Description
+##' This function is to be applied to the entry 'forest' of the output of
+##' \code{\link{blockfor}}. See the example section for illustration.
 ##' 
-##' Details
-##' 
-##' @title blockForest prediction
+##' @title Prediction using Random Forest variants for multi-omics data
 ##' @param object blockForest \code{blockForest} object.
 ##' @param data New test data of class \code{data.frame} or \code{gwaa.data} (GenABEL).
 ##' @param predict.all Return individual predictions for each tree instead of aggregated predictions for all trees. Return a matrix (sample x tree) for classification and regression, a 3d array for probability estimation (sample x class x tree) and survival (sample x time x tree).
@@ -465,6 +465,89 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
 ##'       \code{treetype}    \tab Type of forest/tree. Classification, regression or survival. \cr
 ##'       \code{num.samples}     \tab Number of samples.
 ##'   }
+##'
+##' @examples 
+##' # NOTE: There is no association between covariates and response for the
+##' # simulated data below.
+##' # Moreover, the input parameters of blockfor() are highly unrealistic
+##' # (e.g., nsets = 10 is specified much too small).
+##' # The purpose of the shown examples is merely to illustrate the
+##' # application of predict.blockForest().
+##' 
+##' 
+##' # Generate data:
+##' ################
+##' 
+##' set.seed(1234)
+##' 
+##' # Covariate matrix:
+##' X <- cbind(matrix(nrow=40, ncol=5, data=rnorm(40*5)), 
+##'            matrix(nrow=40, ncol=30, data=rnorm(40*30, mean=1, sd=2)),
+##'            matrix(nrow=40, ncol=100, data=rnorm(40*100, mean=2, sd=3)))
+##' colnames(X) <- paste("X", 1:ncol(X), sep="")
+##' 
+##' # Block variable (list):
+##' block <- rep(1:3, times=c(5, 30, 100))
+##' block <- lapply(1:3, function(x) which(block==x))
+##' 
+##' # Binary outcome:
+##' ybin <- factor(sample(c(0,1), size=40, replace=TRUE), levels=c(0,1))
+##' 
+##' # Survival outcome:
+##' ysurv <- cbind(rnorm(40), sample(c(0,1), size=40, replace=TRUE))
+##' 
+##' 
+##' 
+##' # Divide in training and test data:
+##' 
+##' Xtrain <- X[1:30,]
+##' Xtest <- X[31:40,]
+##' 
+##' ybintrain <- ybin[1:30]
+##' ybintest <- ybin[31:40]
+##' 
+##' ysurvtrain <- ysurv[1:30,]
+##' ysurvtest <- ysurv[31:40,]
+##' 
+##' 
+##' 
+##' 
+##' # Binary outcome: Apply algorithm to training data and obtain predictions
+##' # for the test data:
+##' #########################################################################
+##' 
+##' # Apply a variant to the training data:
+##' 
+##' blockforobj <- blockfor(Xtrain, ybintrain, num_trees = 100, replace = TRUE, block=block,
+##'                         nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+##'                         block.method = "weights_only")
+##' blockforobj$cvalues
+##' 
+##' 
+##' # Obtain prediction for the test data:
+##' 
+##' (predres <- predict(blockforobj$forest, data = Xtest, block.method = "weights_only"))
+##' predres$predictions
+##' 
+##' 
+##' 
+##' # Survival outcome: Apply algorithm to training data and obtain predictions
+##' # for the test data:
+##' ###########################################################################
+##' 
+##' # Apply a variant to the training data:
+##' 
+##' blockforobj <- blockfor(Xtrain, ysurvtrain, num_trees = 100, replace = TRUE, block=block,
+##'                         nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
+##'                         block.method = "weights_only")
+##' blockforobj$cvalues
+##' 
+##' 
+##' # Obtain prediction for the test data:
+##' 
+##' (predres <- predict(blockforobj$forest, data = Xtest, block.method = "weights_only"))
+##' rowSums(predres$chf)
+##'
 ##' @references
 ##' \itemize{
 ##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.

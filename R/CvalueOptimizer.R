@@ -7,17 +7,19 @@
 CvalueOptimizer <- 
   setRefClass("CvalueOptimizer", 
               fields = list(
-                num_treesorder = "integer",
                 nsets = "integer",
                 num_treesoptim = "integer",
-                mtrys = "integer", 
+                mtry = "integer", 
                 min_node_size = "integer", 
                 splitrule = "character",
                 data = "data.frame",
                 trees = "list",
                 treetype = "character",
                 replace = "logical",
-                block = "list"),
+				sample.fraction = "numeric",
+                block = "list",
+				block.method = "character",
+				num.threads = "integer"),
               methods = list(
                 
                 optimizeCvalues = function() {
