@@ -119,12 +119,3 @@ test_that("Tree-wise block weights error if number missmatch", {
                "Error: Length of 'block.weights' not matching number of trees.")
 })
 
-test_that("Tree-wise block weights correctly working", {
-  set.seed(100)
-  rf <- blockForest(Species ~ ., iris, num.trees = 2,
-               blocks = list(1:2, 3:4),
-               block.weights = list(c(0, 1), c(0.5, 0.5)),
-               mtry = c(2, 2))
-  split_vars <- lapply(lapply(rf$forest$split.varIDs, unique), sort)
-  expect_equal(split_vars, list(c(0, 3, 4), c(0, 1:4)))
-})
