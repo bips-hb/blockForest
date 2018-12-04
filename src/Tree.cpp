@@ -266,7 +266,7 @@ void Tree::createPossibleSplitVarSubset(std::vector<std::vector<size_t>>& result
 
     // Randomly add non-deterministic variables (according to weights if needed)
     if (split_select_weights->empty()) {
-      if (blocks->size() > 0 & block_method != BLOCK_WEIGHTS_ONLY) {
+      if (blocks->size() > 0 & block_method != BLOCK_SPLITWEIGHTS) {
         // Draw without replacement from block
         std::vector<size_t> empty_vec;
         drawWithoutReplacementSkip(block_vars, random_number_generator, (*blocks)[i].size(), empty_vec, mtry[i]);
@@ -395,9 +395,9 @@ bool Tree::splitNode(size_t nodeID) {
 
   // Select random subset of variables to possibly split at
   std::vector<std::vector<size_t>> possible_split_varIDs;
-  if (block_method == BLOCK_ONE_BLOCK) {
+  if (block_method == BLOCK_RANDOMBLOCK) {
     createPossibleSplitVarSubsetOneBlock(possible_split_varIDs);
-  } else if (block_method == BLOCK_SAMPLE_BLOCKS) {
+  } else if (block_method == BLOCK_LEAVEOUTBLOCKS) {
     createPossibleSplitVarSubsetSampleBlocks(possible_split_varIDs);
   } else {
     createPossibleSplitVarSubset(possible_split_varIDs);

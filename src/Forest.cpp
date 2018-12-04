@@ -49,7 +49,7 @@ Forest::Forest() :
         true), memory_saving_splitting(false), splitrule(DEFAULT_SPLITRULE), predict_all(false), keep_inbag(false), sample_fraction(
         { 1 }), holdout(false), prediction_type(DEFAULT_PREDICTIONTYPE), num_random_splits(DEFAULT_NUM_RANDOM_SPLITS), alpha(
         DEFAULT_ALPHA), minprop(DEFAULT_MINPROP), num_threads(DEFAULT_NUM_THREADS), data(0), overall_prediction_error(
-        0), importance_mode(DEFAULT_IMPORTANCE_MODE), progress(0), block_method(BLOCK_NONE) {
+        0), block_method(BLOCK_NONE), importance_mode(DEFAULT_IMPORTANCE_MODE), progress(0) {
 }
 
 Forest::~Forest() {
@@ -202,7 +202,7 @@ void Forest::initR(std::string dependent_variable_name, Data* input_data, std::v
   this->block_method = block_method;
 
   // For "weights_only" method get blocks for each var
-  if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+  if (block_method > 0 && block_method == BLOCK_SPLITWEIGHTS) {
     var_in_block = std::vector<size_t>(num_variables);
     for (size_t i = 0; i < blocks.size(); ++i) {
       for (size_t j = 0; j < blocks[i].size(); ++j) {

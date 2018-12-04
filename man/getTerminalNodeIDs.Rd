@@ -20,7 +20,7 @@ Please use predict() with \code{type = "terminalNodes"} instead.
 This function calls predict() now.
 }
 \examples{
-library(ranger)
-rf <- ranger(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
+library(blockForest)
+rf <- blockForest(Species ~ ., data = iris, num.trees = 5, write.forest = TRUE)
 getTerminalNodeIDs(rf, iris)
 }

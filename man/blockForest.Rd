@@ -4,13 +4,15 @@
 \alias{blockForest}
 \title{blockForest}
 \usage{
-blockForest(formula = NULL, data = NULL, num.trees = 500, mtry = NULL,
-  importance = "none", write.forest = TRUE, probability = FALSE,
-  min.node.size = NULL, replace = TRUE, sample.fraction = ifelse(replace,
-  1, 0.632), case.weights = NULL, splitrule = NULL, num.random.splits = 1,
-  alpha = 0.5, minprop = 0.1, split.select.weights = NULL,
-  always.split.variables = NULL, blocks = NULL, block.weights = NULL,
-  block.method = "block_forest", respect.unordered.factors = NULL,
+blockForest(formula = NULL, data = NULL, num.trees = 500,
+  mtry = NULL, importance = "none", write.forest = TRUE,
+  probability = FALSE, min.node.size = NULL, replace = TRUE,
+  sample.fraction = ifelse(replace, 1, 0.632), case.weights = NULL,
+  splitrule = NULL, num.random.splits = 1, alpha = 0.5,
+  minprop = 0.1, split.select.weights = NULL,
+  always.split.variables = NULL, blocks = NULL,
+  block.method = "LeaveOutBlocks", block.weights = NULL,
+  respect.unordered.factors = NULL,
   scale.permutation.importance = FALSE, keep.inbag = FALSE,
   holdout = FALSE, quantreg = FALSE, num.threads = NULL,
   save.memory = FALSE, verbose = TRUE, seed = NULL,
@@ -24,7 +26,7 @@ blockForest(formula = NULL, data = NULL, num.trees = 500, mtry = NULL,
 
 \item{num.trees}{Number of trees.}
 
-\item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Accepts a vector for the 'Block forest' method.}
+\item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Accepts a vector for Block forests.}
 
 \item{importance}{Variable importance mode, one of 'none', 'impurity', 'impurity_corrected', 'permutation'. The 'impurity' measure is the Gini index for classification, the variance of the responses for regression and the sum of test statistics (see \code{splitrule}) for survival.}
 
@@ -48,15 +50,15 @@ blockForest(formula = NULL, data = NULL, num.trees = 500, mtry = NULL,
 
 \item{minprop}{For "maxstat" splitrule: Lower quantile of covariate distribution to be considered for splitting.}
 
-\item{split.select.weights}{Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used.}
+\item{split.select.weights}{Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used. Use this for "VarProb" block forest method.}
 
 \item{always.split.variables}{Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.}
 
 \item{blocks}{Blocks for the 'Block forest' method. A list of numeric vectors.}
 
-\item{block.weights}{Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='one_block_per_split' these are the block sample probabilities.}
+\item{block.method}{Block forest method. Options are: 'BlockVarSel' (default), 'RandomBlock', 'SplitWeights', 'LeaveOutBlocks'.}
 
-\item{block.method}{Block forest method. Options are: 'block_forest' (default), 'one_block_per_split', 'weights_only', 'sample_from_blocks'.}
+\item{block.weights}{Weights for the blocks in Block forests. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='RandomBlock' these are the block sample probabilities.}
 
 \item{respect.unordered.factors}{Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details.}
 
@@ -104,51 +106,25 @@ Object of class \code{blockForest} with elements
   \item{\code{inbag.counts}}{Number of times the observations are in-bag in the trees.}
 }
 \description{
-Description
+Block forests without parameter tuning. 
+Use \code{\link{blockfor}} for standard interface.
+Use this function only if no tuning of the Block forest parameters required.
 }
 \details{
-Details
+See \code{\link{blockfor}} and the \code{ranger} package.
 }
 \examples{
 require(blockForest)
 
-## Classification forest with default settings
-blockForest(Species ~ ., data = iris)
+# Standard Block Forest
+blockForest(Species ~ ., iris, 
+            blocks = list(1:2, 3:4), 
+            mtry = c(1, 2), 
+            block.weights = c(0.1, 0.9), 
+            block.method = "LeaveOutBlocks")
 
-## Prediction
-train.idx <- sample(nrow(iris), 2/3 * nrow(iris))
-iris.train <- iris[train.idx, ]
-iris.test <- iris[-train.idx, ]
-rg.iris <- blockForest(Species ~ ., data = iris.train)
-pred.iris <- predict(rg.iris, data = iris.test)
-table(iris.test$Species, pred.iris$predictions)
-
-## Quantile regression forest
-rf <- blockForest(mpg ~ ., mtcars[1:26, ], quantreg = TRUE)
-pred <- predict(rf, mtcars[27:32, ], type = "quantiles")
-pred$predictions
-
-## Variable importance
-rg.iris <- blockForest(Species ~ ., data = iris, importance = "impurity")
-rg.iris$variable.importance
-
-## Survival forest
-require(survival)
-rg.veteran <- blockForest(Surv(time, status) ~ ., data = veteran)
-plot(rg.veteran$unique.death.times, rg.veteran$survival[1,])
-
-## Alternative interface
-blockForest(dependent.variable.name = "Species", data = iris)
-
-\dontrun{
-## Use GenABEL interface to read Plink data into R and grow a classification forest
-## The ped and map files are not included
-library(GenABEL)
-convert.snp.ped("data.ped", "data.map", "data.raw")
-dat.gwaa <- load.gwaa.data("data.pheno", "data.raw")
-phdata(dat.gwaa)$trait <- factor(phdata(dat.gwaa)$trait)
-blockForest(trait ~ ., data = dat.gwaa)
-}
+# Without blocks, grow standard random forest
+blockForest(Species ~ ., iris)
 
 }
 \references{

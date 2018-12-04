@@ -174,13 +174,13 @@ bool TreeClassification::findBestSplit(size_t nodeID, std::vector<std::vector<si
 
     // Get block weight
     double block_weight = 1;
-    if (block_method > 0 && (block_method == BLOCK_BLOCK_FOREST || block_method == BLOCK_SAMPLE_BLOCKS)) {
+    if (block_method > 0 && (block_method == BLOCK_BLOCKVARSEL || block_method == BLOCK_LEAVEOUTBLOCKS)) {
       block_weight = (*block_weights)[i];
     }
 
     for (auto& varID : possible_split_varIDs[i]) {
-      // Get weight for "weights_only"
-      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+      // Get weight for "SplitWeights"
+      if (block_method > 0 && block_method == BLOCK_SPLITWEIGHTS) {
         block_weight = (*block_weights)[(*var_in_block)[varID]];
       }
 
@@ -481,7 +481,7 @@ bool TreeClassification::findBestSplitExtraTrees(size_t nodeID,
   for (size_t i = 0; i < possible_split_varIDs.size(); ++i) {
     // Get block weight
     double block_weight = 1;
-    if (block_method > 0 && (block_method == BLOCK_BLOCK_FOREST || block_method == BLOCK_SAMPLE_BLOCKS)) {
+    if (block_method > 0 && (block_method == BLOCK_BLOCKVARSEL || block_method == BLOCK_LEAVEOUTBLOCKS)) {
       block_weight = (*block_weights)[i];
     }
 
@@ -491,7 +491,7 @@ bool TreeClassification::findBestSplitExtraTrees(size_t nodeID,
       }
 
       // Get weight for "weights_only"
-      if (block_method > 0 && block_method == BLOCK_WEIGHTS_ONLY) {
+      if (block_method > 0 && block_method == BLOCK_SPLITWEIGHTS) {
         block_weight = (*block_weights)[(*var_in_block)[varID]];
       }
 

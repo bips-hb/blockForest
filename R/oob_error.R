@@ -40,7 +40,7 @@ oob_error = function(rf, x, y, trees) {
     res <- mean((oob_pred - as.numeric(y))^2, na.rm = TRUE)
   } else if (rf$treetype == "Survival") {
     # 1 - C-index
-    res <- 1 - survConcordance(y ~ oob_pred)$concordance
+    res <- 1 - survival::survConcordance(y ~ oob_pred)$concordance
   } else {
     stop("Unknown treetype.")
   }

@@ -15,15 +15,17 @@
 # along with blockForest If not, see <http://www.gnu.org/licenses/>.
 # -------------------------------------------------------------------------------
 
-##' Description
+##' Block forests without parameter tuning. 
+##' Use \code{\link{blockfor}} for standard interface.
+##' Use this function only if no tuning of the Block forest parameters required. 
 ##' 
-##' Details
+##' See \code{\link{blockfor}} and the \code{ranger} package.
 ##' 
 ##' @title blockForest
 ##' @param formula Object of class \code{formula} or \code{character} describing the model to fit. Interaction terms supported only for numerical variables.
 ##' @param data Training data of class \code{data.frame}, \code{matrix}, \code{dgCMatrix} (Matrix) or \code{gwaa.data} (GenABEL).
 ##' @param num.trees Number of trees.
-##' @param mtry Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Accepts a vector for the 'Block forest' method.
+##' @param mtry Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Accepts a vector for Block forests.
 ##' @param importance Variable importance mode, one of 'none', 'impurity', 'impurity_corrected', 'permutation'. The 'impurity' measure is the Gini index for classification, the variance of the responses for regression and the sum of test statistics (see \code{splitrule}) for survival. 
 ##' @param write.forest Save \code{blockForest.forest} object, required for prediction. Set to \code{FALSE} to reduce memory usage if no prediction intended.
 ##' @param probability Grow a probability forest as in Malley et al. (2012). 
@@ -35,11 +37,11 @@
 ##' @param num.random.splits For "extratrees" splitrule.: Number of random splits to consider for each candidate splitting variable.
 ##' @param alpha For "maxstat" splitrule: Significance threshold to allow splitting.
 ##' @param minprop For "maxstat" splitrule: Lower quantile of covariate distribution to be considered for splitting.
-##' @param split.select.weights Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used.  
+##' @param split.select.weights Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used. Use this for "VarProb" block forest method.
 ##' @param always.split.variables Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.
 ##' @param blocks Blocks for the 'Block forest' method. A list of numeric vectors. 
-##' @param block.weights Weights for the blocks in the 'Block forest' method. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='one_block_per_split' these are the block sample probabilities.
-##' @param block.method Block forest method. Options are: 'block_forest' (default), 'one_block_per_split', 'weights_only', 'sample_from_blocks'.
+##' @param block.method Block forest method. Options are: 'BlockVarSel' (default), 'RandomBlock', 'SplitWeights', 'LeaveOutBlocks'.
+##' @param block.weights Weights for the blocks in Block forests. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='RandomBlock' these are the block sample probabilities.
 ##' @param respect.unordered.factors Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details. 
 ##' @param scale.permutation.importance Scale permutation importance by standard error as in (Breiman 2001). Only applicable if permutation variable importance mode selected.
 ##' @param keep.inbag Save how often observations are in-bag in each tree. 
@@ -73,44 +75,16 @@
 ##'   \item{\code{inbag.counts}}{Number of times the observations are in-bag in the trees.}
 ##' @examples
 ##' require(blockForest)
-##'
-##' ## Classification forest with default settings
-##' blockForest(Species ~ ., data = iris)
-##'
-##' ## Prediction
-##' train.idx <- sample(nrow(iris), 2/3 * nrow(iris))
-##' iris.train <- iris[train.idx, ]
-##' iris.test <- iris[-train.idx, ]
-##' rg.iris <- blockForest(Species ~ ., data = iris.train)
-##' pred.iris <- predict(rg.iris, data = iris.test)
-##' table(iris.test$Species, pred.iris$predictions)
 ##' 
-##' ## Quantile regression forest
-##' rf <- blockForest(mpg ~ ., mtcars[1:26, ], quantreg = TRUE)
-##' pred <- predict(rf, mtcars[27:32, ], type = "quantiles")
-##' pred$predictions
+##' # Standard Block Forest
+##' blockForest(Species ~ ., iris, 
+##'             blocks = list(1:2, 3:4), 
+##'             mtry = c(1, 2), 
+##'             block.weights = c(0.1, 0.9), 
+##'             block.method = "LeaveOutBlocks")
 ##'
-##' ## Variable importance
-##' rg.iris <- blockForest(Species ~ ., data = iris, importance = "impurity")
-##' rg.iris$variable.importance
-##'
-##' ## Survival forest
-##' require(survival)
-##' rg.veteran <- blockForest(Surv(time, status) ~ ., data = veteran)
-##' plot(rg.veteran$unique.death.times, rg.veteran$survival[1,])
-##'
-##' ## Alternative interface
-##' blockForest(dependent.variable.name = "Species", data = iris)
-##' 
-##' \dontrun{
-##' ## Use GenABEL interface to read Plink data into R and grow a classification forest
-##' ## The ped and map files are not included
-##' library(GenABEL)
-##' convert.snp.ped("data.ped", "data.map", "data.raw")
-##' dat.gwaa <- load.gwaa.data("data.pheno", "data.raw")
-##' phdata(dat.gwaa)$trait <- factor(phdata(dat.gwaa)$trait)
-##' blockForest(trait ~ ., data = dat.gwaa)
-##' }
+##' # Without blocks, grow standard random forest
+##' blockForest(Species ~ ., iris)
 ##'
 ##' @author Marvin N. Wright
 ##' @references
@@ -139,7 +113,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
                         case.weights = NULL, splitrule = NULL, 
                         num.random.splits = 1, alpha = 0.5, minprop = 0.1,
                         split.select.weights = NULL, always.split.variables = NULL,
-                        blocks = NULL, block.weights = NULL, block.method = "block_forest",
+                        blocks = NULL, block.method = "LeaveOutBlocks", block.weights = NULL, 
                         respect.unordered.factors = NULL,
                         scale.permutation.importance = FALSE,
                         keep.inbag = FALSE, holdout = FALSE,
@@ -597,13 +571,13 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   
   ## Block forests
   if (!is.null(blocks)) {
-    if (block.method == "block_forest") {
+    if (block.method == "BlockVarSel") {
       block.method <- 1
-    } else if (block.method == "one_block_per_split") {
+    } else if (block.method == "RandomBlock") {
       block.method <- 2
-    } else if (block.method == "weights_only") {
+    } else if (block.method == "SplitWeights") {
       block.method <- 3
-    } else if (block.method == "sample_from_blocks") {
+    } else if (block.method == "LeaveOutBlocks") {
       block.method <- 4
     } else {
       stop("Error: Unknown value for 'block.method'.") 
@@ -634,7 +608,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
       block.weights <- list(block.weights)
     }
     if (block.method == 3 & (!is.numeric(mtry) | length(mtry) > 1)) {
-      stop("Error: Single value for 'mtry' expected in 'weights_only' method.")
+      stop("Error: Single value for 'mtry' expected in 'SplitWeights' method.")
     }
     if (any(sapply(blocks, function(x) {any(round(x) != x)}))) {
       stop("Error: The 'blocks' argument contains non-integers.")

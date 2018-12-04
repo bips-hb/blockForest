@@ -1,46 +1,35 @@
 # -------------------------------------------------------------------------------
-#   This file is part of Ranger.
+#   This file is part of blockForest
 #
-# Ranger is free software: you can redistribute it and/or modify
+# blockForest is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
 #
-# Ranger is distributed in the hope that it will be useful,
+# blockForest is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License
-# along with Ranger. If not, see <http://www.gnu.org/licenses/>.
-#
-# Written by:
-#
-#   Marvin N. Wright
-# Institut fuer Medizinische Biometrie und Statistik
-# Universitaet zu Luebeck
-# Ratzeburger Allee 160
-# 23562 Luebeck
-# Germany
-#
-# http://www.imbs-luebeck.de
+# along with blockForest If not, see <http://www.gnu.org/licenses/>.
 # -------------------------------------------------------------------------------
 
 
 #' Tree information in human readable format
 #' 
-#' Extract tree information of a \code{ranger} object. 
+#' Extract tree information of a \code{blockForest} object. 
 #' 
 #' Node and variable ID's are 0-indexed, i.e., node 0 is the root node. 
-#' If the formula interface is used in the \code{ranger} call, the variable ID's are usually different to the original data used to grow the tree. 
+#' If the formula interface is used in the \code{blockForest} call, the variable ID's are usually different to the original data used to grow the tree. 
 #' Refer to the variable name instead to be sure.
 #' 
-#' Splitting at unordered factors (nominal variables) depends on the option \code{respect.unordered.factors} in the \code{ranger} call. 
+#' Splitting at unordered factors (nominal variables) depends on the option \code{respect.unordered.factors} in the \code{blockForest} call. 
 #' For the "ignore" and "order" approaches, all values smaller or equal the \code{splitval} value go to the left and all values larger go to the right, as usual. 
 #' However, with "order" the values correspond to the order in \code{object$forest$covariate.levels} instead of the original order (usually alphabetical).
 #' In the "partition" mode, the \code{splitval} values for unordered factor are comma separated lists of values, representing the factor levels (in the original order) going to the left.
 #' 
-#' @param object \code{ranger} object.
+#' @param object \code{blockForest} object.
 #' @param tree Number of the tree of interest.
 #' @return A data.frame with the columns
 #' \tabular{ll}{
@@ -54,14 +43,13 @@
 #'       \code{prediction} \tab One column with the predicted class (factor) for classification and the predicted numerical value for regression. One probability per class for probability estimation in several columns. Nothing for survival, refer to \code{object$forest$chf} for the CHF node predictions. \cr
 #'   }
 #' @examples
-#' require(ranger)
-#' rf <- ranger(Species ~ ., data = iris)
+#' require(blockForest)
+#' rf <- blockForest(Species ~ ., data = iris)
 #' treeInfo(rf, 1)
-#' @seealso \code{\link{ranger}}
 #' @author Marvin N. Wright
 #' @export
 treeInfo <- function(object, tree = 1) {
-  if (class(object) != "ranger" & class(object) != "holdoutRF") {
+  if (class(object) != "ranger" & class(object) != "holdoutRF" & class(object) != "blockForest") {
     stop("Error: Invalid class of input object.")
   } 
   forest <- object$forest

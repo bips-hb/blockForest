@@ -2,18 +2,6 @@ library(blockForest)
 library(survival)
 context("blockForest")
 
-## GenABEL
-if (!requireNamespace("GenABEL", quietly = TRUE)) {
-  stop("Package GenABEL is required for testing blockForest completely. Please install it.", call. = FALSE)
-} else {
-  dat.gwaa <- readRDS("../test_gwaa.Rds")
-  rg.gwaa <- blockForest(CHD ~ ., data = dat.gwaa, verbose = FALSE, write.forest = TRUE)
-}
-
-test_that("classification gwaa rf is of class blockForest with 15 elements", {
-  expect_is(rg.gwaa, "blockForest")
-  expect_equal(length(rg.gwaa), 15)
-})
 
 test_that("Matrix interface works for Probability estimation", {
   rf <- blockForest(dependent.variable.name = "Species", data = data.matrix(iris), write.forest = TRUE, probability = TRUE)
@@ -278,11 +266,3 @@ test_that("No error if variable named forest", {
   rf <- blockForest(Species ~ ., dat, num.trees = 5)
   expect_silent(predict(rf, dat))
 })
-
-test_that("GenABEL prediction works if no covariates and formula used", {
-  dat <- dat.gwaa
-  dat@phdata$Age <- NULL
-  rf <- blockForest(CHD ~ .-Sex, data = dat, num.trees = 5)
-  expect_silent(predict(rf, dat))
-})
-

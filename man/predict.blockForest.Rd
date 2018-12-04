@@ -5,9 +5,9 @@
 \title{Prediction using Random Forest variants for multi-omics data}
 \usage{
 \method{predict}{blockForest}(object, data = NULL, predict.all = FALSE,
-  num.trees = object$num.trees, type = "response", se.method = "infjack",
-  quantiles = c(0.1, 0.5, 0.9), seed = NULL, num.threads = NULL,
-  verbose = TRUE, ...)
+  num.trees = object$num.trees, type = "response",
+  se.method = "infjack", quantiles = c(0.1, 0.5, 0.9), seed = NULL,
+  num.threads = NULL, verbose = TRUE, ...)
 }
 \arguments{
 \item{object}{blockForest \code{blockForest} object.}
@@ -101,15 +101,15 @@ ysurvtest <- ysurv[31:40,]
 
 # Apply a variant to the training data:
 
-blockforobj <- blockfor(Xtrain, ybintrain, num_trees = 100, replace = TRUE, block=block,
-                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
-                        block.method = "weights_only")
+blockforobj <- blockfor(Xtrain, ybintrain, num.trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+                        block.method = "SplitWeights")
 blockforobj$cvalues
 
 
 # Obtain prediction for the test data:
 
-(predres <- predict(blockforobj$forest, data = Xtest, block.method = "weights_only"))
+(predres <- predict(blockforobj$forest, data = Xtest, block.method = "SplitWeights"))
 predres$predictions
 
 
@@ -120,15 +120,15 @@ predres$predictions
 
 # Apply a variant to the training data:
 
-blockforobj <- blockfor(Xtrain, ysurvtrain, num_trees = 100, replace = TRUE, block=block,
-                        nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
-                        block.method = "weights_only")
+blockforobj <- blockfor(Xtrain, ysurvtrain, num.trees = 100, replace = TRUE, block=block,
+                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+                        block.method = "SplitWeights")
 blockforobj$cvalues
 
 
 # Obtain prediction for the test data:
 
-(predres <- predict(blockforobj$forest, data = Xtest, block.method = "weights_only"))
+(predres <- predict(blockforobj$forest, data = Xtest, block.method = "SplitWeights"))
 rowSums(predres$chf)
 
 }

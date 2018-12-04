@@ -518,15 +518,15 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
 ##' 
 ##' # Apply a variant to the training data:
 ##' 
-##' blockforobj <- blockfor(Xtrain, ybintrain, num_trees = 100, replace = TRUE, block=block,
-##'                         nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
-##'                         block.method = "weights_only")
+##' blockforobj <- blockfor(Xtrain, ybintrain, num.trees = 100, replace = TRUE, block=block,
+##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+##'                         block.method = "SplitWeights")
 ##' blockforobj$cvalues
 ##' 
 ##' 
 ##' # Obtain prediction for the test data:
 ##' 
-##' (predres <- predict(blockforobj$forest, data = Xtest, block.method = "weights_only"))
+##' (predres <- predict(blockforobj$forest, data = Xtest, block.method = "SplitWeights"))
 ##' predres$predictions
 ##' 
 ##' 
@@ -537,15 +537,15 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
 ##' 
 ##' # Apply a variant to the training data:
 ##' 
-##' blockforobj <- blockfor(Xtrain, ysurvtrain, num_trees = 100, replace = TRUE, block=block,
-##'                         nsets = 10, num_treesoptim = 50, splitrule="extratrees", 
-##'                         block.method = "weights_only")
+##' blockforobj <- blockfor(Xtrain, ysurvtrain, num.trees = 100, replace = TRUE, block=block,
+##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+##'                         block.method = "SplitWeights")
 ##' blockforobj$cvalues
 ##' 
 ##' 
 ##' # Obtain prediction for the test data:
 ##' 
-##' (predres <- predict(blockforobj$forest, data = Xtest, block.method = "weights_only"))
+##' (predres <- predict(blockforobj$forest, data = Xtest, block.method = "SplitWeights"))
 ##' rowSums(predres$chf)
 ##'
 ##' @references

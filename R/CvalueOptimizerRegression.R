@@ -8,15 +8,12 @@ CvalueOptimizerRegression <-
               fields = list(), 
               methods = list(
                 
-                optimizeCvalues = function() {
+                optimizeCvalues = function(...) {
                   
-                  if(length(num.threads)==0)
-                    num.threads <- NULL
-                  
-                  if(block.method=="block_forest") {
+                  if(block.method=="BlockVarSel") {
                     
                     # Number of blocks:
-                    M <- length(block)
+                    M <- length(blocks)
                     
                     # Simulate 'nsets' vectors of c values with the ordering
                     # given by morder,  for each of these construct a forest,
@@ -33,10 +30,10 @@ CvalueOptimizerRegression <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num_treesoptim, replace = replace, sample.fraction = sample.fraction,
-                                            blocks = block,
+                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                                            blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, splitrule=splitrule, block.method=block.method, num.threads=num.threads)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -50,12 +47,12 @@ CvalueOptimizerRegression <-
                   }
                   
                   
-                  if(block.method=="block_select_weights") {
+                  if(block.method=="VarProb") {
                     
-                    pm <- sapply(block, length)
+                    pm <- sapply(blocks, length)
                     
                     # Number of blocks:
-                    M <- length(block)
+                    M <- length(blocks)
                     
                     # Simulate 'nsets' vectors of c values with the ordering
                     # given by morder,  for each of these construct a forest,
@@ -73,12 +70,12 @@ CvalueOptimizerRegression <-
                       cvaluesall[[l]] <- cvalues  # split.select.weights
                       
                       splitweights <- rep(NA, sum(pm))
-                      for(blocki in seq(along=block))
-                        splitweights[block[[blocki]]] <- cvalues[blocki]
+                      for(blocki in seq(along=blocks))
+                        splitweights[blocks[[blocki]]] <- cvalues[blocki]
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num_treesoptim, replace = replace, sample.fraction = sample.fraction,
+                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
                                             split.select.weights = splitweights,
-                                            mtry = mtry, keep.inbag = TRUE, splitrule=splitrule, block.method=block.method, num.threads=num.threads)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -92,10 +89,10 @@ CvalueOptimizerRegression <-
                   }
                   
                   
-                  if(block.method=="weights_only") {
+                  if(block.method=="SplitWeights") {
                     
                     # Number of blocks:
-                    M <- length(block)
+                    M <- length(blocks)
                     
                     # Simulate 'nsets' vectors of c values with the ordering
                     # given by morder,  for each of these construct a forest,
@@ -112,10 +109,10 @@ CvalueOptimizerRegression <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num_treesoptim, replace = replace, sample.fraction = sample.fraction,
-                                            blocks = block,
+                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                                            blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, splitrule=splitrule, block.method=block.method, num.threads=num.threads)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -129,10 +126,10 @@ CvalueOptimizerRegression <-
                   }
                   
                   
-                  if(block.method=="sample_from_blocks") {
+                  if(block.method=="LeaveOutBlocks") {
                     
                     # Number of blocks:
-                    M <- length(block)
+                    M <- length(blocks)
                     
                     # Simulate 'nsets' vectors of c values with the ordering
                     # given by morder,  for each of these construct a forest,
@@ -149,10 +146,10 @@ CvalueOptimizerRegression <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num_treesoptim, replace = replace, sample.fraction = sample.fraction,
-                                            blocks = block,
+                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                                            blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, splitrule=splitrule, block.method=block.method, num.threads=num.threads)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -166,10 +163,10 @@ CvalueOptimizerRegression <-
                   }
                   
                   
-                  if(block.method=="one_block_per_split") {
+                  if(block.method=="RandomBlock") {
                     
                     # Number of blocks:
-                    M <- length(block)
+                    M <- length(blocks)
                     
                     # Simulate 'nsets' vectors of c values with the ordering
                     # given by morder,  for each of these construct a forest,
@@ -186,10 +183,10 @@ CvalueOptimizerRegression <-
                       cvalues <- diff(c(0, sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num_treesoptim, replace = replace, sample.fraction = sample.fraction,
-                                            blocks = block,
+                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                                            blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, splitrule=splitrule, block.method=block.method, num.threads=num.threads)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
                       
                       errs[l] <- forest$prediction.error
                       
