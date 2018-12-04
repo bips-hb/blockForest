@@ -11,7 +11,7 @@ blockForest(formula = NULL, data = NULL, num.trees = 500,
   splitrule = NULL, num.random.splits = 1, alpha = 0.5,
   minprop = 0.1, split.select.weights = NULL,
   always.split.variables = NULL, blocks = NULL,
-  block.method = "LeaveOutBlocks", block.weights = NULL,
+  block.method = "BlockForest", block.weights = NULL,
   respect.unordered.factors = NULL,
   scale.permutation.importance = FALSE, keep.inbag = FALSE,
   holdout = FALSE, quantreg = FALSE, num.threads = NULL,
@@ -56,7 +56,7 @@ blockForest(formula = NULL, data = NULL, num.trees = 500,
 
 \item{blocks}{Blocks for the 'Block forest' method. A list of numeric vectors.}
 
-\item{block.method}{Block forest method. Options are: 'BlockVarSel' (default), 'RandomBlock', 'SplitWeights', 'LeaveOutBlocks'.}
+\item{block.method}{Block forest method. Options are: 'BlockForest' (default), 'RandomBlock', 'SplitWeights', 'BlockVarSel'.}
 
 \item{block.weights}{Weights for the blocks in Block forests. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='RandomBlock' these are the block sample probabilities.}
 
@@ -121,7 +121,7 @@ blockForest(Species ~ ., iris,
             blocks = list(1:2, 3:4), 
             mtry = c(1, 2), 
             block.weights = c(0.1, 0.9), 
-            block.method = "LeaveOutBlocks")
+            block.method = "BlockForest")
 
 # Without blocks, grow standard random forest
 blockForest(Species ~ ., iris)

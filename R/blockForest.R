@@ -40,7 +40,7 @@
 ##' @param split.select.weights Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used. Use this for "VarProb" block forest method.
 ##' @param always.split.variables Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.
 ##' @param blocks Blocks for the 'Block forest' method. A list of numeric vectors. 
-##' @param block.method Block forest method. Options are: 'BlockVarSel' (default), 'RandomBlock', 'SplitWeights', 'LeaveOutBlocks'.
+##' @param block.method Block forest method. Options are: 'BlockForest' (default), 'RandomBlock', 'SplitWeights', 'BlockVarSel'.
 ##' @param block.weights Weights for the blocks in Block forests. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='RandomBlock' these are the block sample probabilities.
 ##' @param respect.unordered.factors Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details. 
 ##' @param scale.permutation.importance Scale permutation importance by standard error as in (Breiman 2001). Only applicable if permutation variable importance mode selected.
@@ -81,7 +81,7 @@
 ##'             blocks = list(1:2, 3:4), 
 ##'             mtry = c(1, 2), 
 ##'             block.weights = c(0.1, 0.9), 
-##'             block.method = "LeaveOutBlocks")
+##'             block.method = "BlockForest")
 ##'
 ##' # Without blocks, grow standard random forest
 ##' blockForest(Species ~ ., iris)
@@ -113,7 +113,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
                         case.weights = NULL, splitrule = NULL, 
                         num.random.splits = 1, alpha = 0.5, minprop = 0.1,
                         split.select.weights = NULL, always.split.variables = NULL,
-                        blocks = NULL, block.method = "LeaveOutBlocks", block.weights = NULL, 
+                        blocks = NULL, block.method = "BlockForest", block.weights = NULL, 
                         respect.unordered.factors = NULL,
                         scale.permutation.importance = FALSE,
                         keep.inbag = FALSE, holdout = FALSE,
@@ -577,7 +577,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
       block.method <- 2
     } else if (block.method == "SplitWeights") {
       block.method <- 3
-    } else if (block.method == "LeaveOutBlocks") {
+    } else if (block.method == "BlockForest") {
       block.method <- 4
     } else {
       stop("Error: Unknown value for 'block.method'.") 
