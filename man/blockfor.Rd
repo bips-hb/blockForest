@@ -4,8 +4,8 @@
 \alias{blockfor}
 \title{Random Forest variants for multi-omics covariate data}
 \usage{
-blockfor(X, y, blocks, block.method, num.trees = 2000, mtry = NULL,
-  nsets = 300, num.trees.pre = 1500, ...)
+blockfor(X, y, blocks, block.method = "BlockForest", num.trees = 2000,
+  mtry = NULL, nsets = 300, num.trees.pre = 1500, ...)
 }
 \arguments{
 \item{X}{Covariate matrix. observations in rows, variables in columns.}
@@ -20,14 +20,14 @@ a survival time and '0' if that time is a censoring time.}
 \item{blocks}{A list of length equal to the number M of blocks considered. Each
 entry contains the vector of column indices in 'X' of the covariates in one of the M blocks.}
 
-\item{block.method}{Forest variant to use. One of the following: "VarProb", "SplitWeights", "BlockVarSel", "RandomBlock", "LeaveOutBlocks".}
+\item{block.method}{Forest variant to use. One of the following: "BlockForest" (default), "VarProb", "SplitWeights", "BlockVarSel", "RandomBlock".}
 
 \item{num.trees}{Number of trees in the forest.}
 
 \item{mtry}{This is either a number specifying the number of variables sampled for each
 split from all variables (for variants "SplitWeights" and "VarProb")
 or a vector of length equal to the number of blocks, where the m-th entry of the
-vector gives the number of variables to sample from block m (for variants "BlockVarSel", "RandomBlock", and "LeaveOutBlocks").
+vector gives the number of variables to sample from block m (for variants "BlockVarSel", "RandomBlock", and "BlockForest").
 The default values are sqrt(p_1) + sqrt(p_2) + ... sqrt(p_M) and (sqrt(p_1), sqrt(p_2), ..., sqrt(p_M)), respectively,
 where p_m denotes the number of variables in the m-th block (m = 1, ..., M).}
 
@@ -60,7 +60,7 @@ clinical covariates, gene expression measurements, methylation measurements,
 and copy number variation measurements. \cr
 The group of covariates corresponding to one specific data type is denoted as a 'block'. \cr
 Each of the five variants uses a different split selection algorithm.
-They are denoted as "VarProb", "SplitWeights", "BlockVarSel", "RandomBlock", and "LeaveOutBlocks". \cr
+They are denoted as "BlockForest", "SplitWeights", "BlockVarSel", "RandomBlock", and "VarProb". \cr
 They will subject to an upcoming publication by Roman Hornung and
 Marvin N. Wright. \cr
 Note that this R package is a fork of the R package ranger.
@@ -132,7 +132,7 @@ blockforobj$cvalues
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "LeaveOutBlocks")
+                        block.method = "BlockForest")
 blockforobj$cvalues
 
 
@@ -172,7 +172,7 @@ blockforobj$cvalues
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "LeaveOutBlocks")
+                        block.method = "BlockForest")
 blockforobj$cvalues
 
 }

@@ -124,7 +124,7 @@ CvalueOptimizerSurvival <-
                   }
                   
                   
-                  if(block.method=="LeaveOutBlocks") {
+                  if(block.method=="BlockForest") {
                     
                     # Number of blocks:
                     M <- length(blocks)
