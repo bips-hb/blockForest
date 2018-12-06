@@ -20,14 +20,14 @@ a survival time and '0' if that time is a censoring time.}
 \item{blocks}{A list of length equal to the number M of blocks considered. Each
 entry contains the vector of column indices in 'X' of the covariates in one of the M blocks.}
 
-\item{block.method}{Forest variant to use. One of the following: "BlockForest" (default), "VarProb", "SplitWeights", "BlockVarSel", "RandomBlock".}
+\item{block.method}{Forest variant to use. One of the following: "BlockForest" (default), "RandomBlock", "BlockVarSel", "VarProb", "SplitWeights".}
 
 \item{num.trees}{Number of trees in the forest.}
 
 \item{mtry}{This is either a number specifying the number of variables sampled for each
 split from all variables (for variants "SplitWeights" and "VarProb")
 or a vector of length equal to the number of blocks, where the m-th entry of the
-vector gives the number of variables to sample from block m (for variants "BlockVarSel", "RandomBlock", and "BlockForest").
+vector gives the number of variables to sample from block m (for variants "BlockForest", "RandomBlock", and "BlockVarSel").
 The default values are sqrt(p_1) + sqrt(p_2) + ... sqrt(p_M) and (sqrt(p_1), sqrt(p_2), ..., sqrt(p_M)), respectively,
 where p_m denotes the number of variables in the m-th block (m = 1, ..., M).}
 
@@ -60,7 +60,7 @@ clinical covariates, gene expression measurements, methylation measurements,
 and copy number variation measurements. \cr
 The group of covariates corresponding to one specific data type is denoted as a 'block'. \cr
 Each of the five variants uses a different split selection algorithm.
-They are denoted as "BlockForest", "SplitWeights", "BlockVarSel", "RandomBlock", and "VarProb". \cr
+They are denoted as "BlockForest", "RandomBlock",  "BlockVarSel", "VarProb" and "SplitWeights". \cr
 They will subject to an upcoming publication by Roman Hornung and
 Marvin N. Wright. \cr
 Note that this R package is a fork of the R package ranger.
@@ -102,23 +102,9 @@ ysurv <- cbind(rnorm(40), sample(c(0,1), size=40, replace=TRUE))
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "VarProb")
+                        block.method = "BlockForest")
 # Tuning parameter estimates (see the upcoming publication by Roman Hornung
 # and Marvin N. Wright):
-blockforobj$cvalues
-
-
-
-blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "SplitWeights")
-blockforobj$cvalues
-
-
-
-blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "BlockVarSel")
 blockforobj$cvalues
 
 
@@ -132,7 +118,21 @@ blockforobj$cvalues
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "BlockForest")
+                        block.method = "BlockVarSel")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
+                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+                        block.method = "VarProb")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
+                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+                        block.method = "SplitWeights")
 blockforobj$cvalues
 
 
@@ -144,21 +144,7 @@ blockforobj$cvalues
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "VarProb")
-blockforobj$cvalues
-
-
-
-blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "SplitWeights")
-blockforobj$cvalues
-
-
-
-blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "BlockVarSel")
+                        block.method = "BlockForest")
 blockforobj$cvalues
 
 
@@ -172,7 +158,21 @@ blockforobj$cvalues
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "BlockForest")
+                        block.method = "BlockVarSel")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
+                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+                        block.method = "VarProb")
+blockforobj$cvalues
+
+
+
+blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
+                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
+                        block.method = "SplitWeights")
 blockforobj$cvalues
 
 }

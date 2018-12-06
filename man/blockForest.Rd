@@ -56,7 +56,7 @@ blockForest(formula = NULL, data = NULL, num.trees = 500,
 
 \item{blocks}{Blocks for the 'Block forest' method. A list of numeric vectors.}
 
-\item{block.method}{Block forest method. Options are: 'BlockForest' (default), 'RandomBlock', 'SplitWeights', 'BlockVarSel'.}
+\item{block.method}{Block forest method. Options are: 'BlockForest' (default), 'RandomBlock', 'BlockVarSel', 'SplitWeights'.}
 
 \item{block.weights}{Weights for the blocks in Block forests. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='RandomBlock' these are the block sample probabilities.}
 
