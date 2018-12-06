@@ -45,7 +45,7 @@
 ##' @return
 ##' \code{blockfor} returns a list containing the following components: 
 ##' \item{forest}{ object of class \code{"blockForest"}. Constructed forest.  }
-##' \item{cvalues}{ vector of length M. Optimized tuning parameter value for each block. }
+##' \item{paramvalues}{ vector of length M. Optimized tuning parameter value for each block. }
 ##' \item{biased_oob_error_donotuse}{ numeric. OOB estimated prediction error. NOTE: This estimate should not be used, because it is (highly) optimistic (i.e, too small), because the data set was used twice - for optimizing the tuning parameter values and for estimating the prediction error. Instead, cross-validation should be used to estimate the prediction error. }
 ##'
 ##' @examples 
@@ -88,35 +88,35 @@
 ##'                         block.method = "BlockForest")
 ##' # Tuning parameter estimates (see the upcoming publication by Roman Hornung
 ##' # and Marvin N. Wright):
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "RandomBlock")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "BlockVarSel")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "VarProb")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "SplitWeights")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
@@ -128,35 +128,35 @@
 ##' blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "BlockForest")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "RandomBlock")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "BlockVarSel")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "VarProb")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' 
 ##' 
 ##' blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "SplitWeights")
-##' blockforobj$cvalues
+##' blockforobj$paramvalues
 ##' 
 ##' @author Roman Hornung, Marvin N. Wright
 ##' @references
@@ -212,19 +212,19 @@ blockfor <-
                                                        response_levels = levels(model.data[, 1]), 
                                                        blocks = blocks, block.method=block.method)
       
-      cvalues <- cvalueoptim$optimizeCvalues(...)
+      paramvalues <- cvalueoptim$optimizeCvalues(...)
 
 								        if(block.method!="VarProb")
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
                               blocks = blocks,
-                              block.weights = cvalues,
+                              block.weights = paramvalues,
                               mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
       else {
         
         pm <- sapply(blocks, length)
         splitweights <- rep(NA, sum(pm))
         for(blocki in seq(along=blocks))
-          splitweights[blocks[[blocki]]] <- cvalues[blocki]
+          splitweights[blocks[[blocki]]] <- paramvalues[blocki]
 
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
                               split.select.weights = splitweights,
@@ -239,19 +239,19 @@ blockfor <-
                                                    data = model.data,
                                                    blocks = blocks, block.method=block.method)
       
-      cvalues <- cvalueoptim$optimizeCvalues(...)
+      paramvalues <- cvalueoptim$optimizeCvalues(...)
 
 	        if(block.method!="VarProb")
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees,
                               blocks = blocks,
-                              block.weights = cvalues,
+                              block.weights = paramvalues,
                               mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
       else {
         
         pm <- sapply(blocks, length)
         splitweights <- rep(NA, sum(pm))
         for(blocki in seq(along=blocks))
-          splitweights[blocks[[blocki]]] <- cvalues[blocki]
+          splitweights[blocks[[blocki]]] <- paramvalues[blocki]
 
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees,
                               split.select.weights = splitweights,
@@ -265,19 +265,19 @@ blockfor <-
                                                  mtry = as.integer(mtry), 
                                                  data = model.data, blocks = blocks, block.method=block.method)
       
-      cvalues <- cvalueoptim$optimizeCvalues(...)
+      paramvalues <- cvalueoptim$optimizeCvalues(...)
       
       if(block.method!="VarProb")
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
                               blocks = blocks,
-                              block.weights = cvalues,
+                              block.weights = paramvalues,
                               mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
       else {
         
         pm <- sapply(blocks, length)
         splitweights <- rep(NA, sum(pm))
         for(blocki in seq(along=blocks))
-          splitweights[blocks[[blocki]]] <- cvalues[blocki]
+          splitweights[blocks[[blocki]]] <- paramvalues[blocki]
 
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
                               split.select.weights = splitweights,
@@ -289,7 +289,7 @@ blockfor <-
       stop("Unkown tree type.")
     }
     
-    res <- list(forest=forest, cvalues=cvalues, biased_oob_error_donotuse=forest$prediction.error)	
+    res <- list(forest=forest, paramvalues=paramvalues, biased_oob_error_donotuse=forest$prediction.error)	
     
     ## Return forest
     return(res) 

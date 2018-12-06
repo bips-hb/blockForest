@@ -104,7 +104,7 @@ ysurvtest <- ysurv[31:40,]
 blockforobj <- blockfor(Xtrain, ybintrain, num.trees = 100, replace = TRUE, block=block,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "SplitWeights")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 # Obtain prediction for the test data:
@@ -123,7 +123,7 @@ predres$predictions
 blockforobj <- blockfor(Xtrain, ysurvtrain, num.trees = 100, replace = TRUE, block=block,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "SplitWeights")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 # Obtain prediction for the test data:

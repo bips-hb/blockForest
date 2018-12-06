@@ -47,7 +47,7 @@ parameter values, see 'nsets' for details.}
 \value{
 \code{blockfor} returns a list containing the following components: 
 \item{forest}{ object of class \code{"blockForest"}. Constructed forest.  }
-\item{cvalues}{ vector of length M. Optimized tuning parameter value for each block. }
+\item{paramvalues}{ vector of length M. Optimized tuning parameter value for each block. }
 \item{biased_oob_error_donotuse}{ numeric. OOB estimated prediction error. NOTE: This estimate should not be used, because it is (highly) optimistic (i.e, too small), because the data set was used twice - for optimizing the tuning parameter values and for estimating the prediction error. Instead, cross-validation should be used to estimate the prediction error. }
 }
 \description{
@@ -105,35 +105,35 @@ blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         block.method = "BlockForest")
 # Tuning parameter estimates (see the upcoming publication by Roman Hornung
 # and Marvin N. Wright):
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "RandomBlock")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "BlockVarSel")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "VarProb")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "SplitWeights")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
@@ -145,35 +145,35 @@ blockforobj$cvalues
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "BlockForest")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "RandomBlock")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "BlockVarSel")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "VarProb")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "SplitWeights")
-blockforobj$cvalues
+blockforobj$paramvalues
 
 }
 \references{
