@@ -1,7 +1,3 @@
-
-##' @title Data class
-##' @description Wrapper class for \code{data.frame}. 
-##' Allows to access a \code{data.frame} by reference.
 Data <- 
   setRefClass("Data", 
               fields = list(
