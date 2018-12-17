@@ -40,7 +40,8 @@
 ##' parameter values generated in 1. that is associated with the smallest OOB estimated prediction error.
 ##' @param num.trees.pre Number of trees in each forest constructed during the optimization of the tuning
 ##' parameter values, see 'nsets' for details.
-##' @param ... Parameters passed to \code{blockForest}, such as \code{num.threads}, \code{splitrule}, etc. See \code{\link{blockForest}} for details.
+##' @param splitrule Splitting rule. Default "extratrees" (for computational efficiency). For other options see \code{\link{blockForest}}.
+##' @param ... Parameters passed to \code{blockForest}, such as \code{num.threads}, etc. See \code{\link{blockForest}} for details.
 ##'
 ##' @return
 ##' \code{blockfor} returns a list containing the following components: 
@@ -168,7 +169,7 @@
 ##' @export
 blockfor <- 
   function(X, y, blocks, block.method = "BlockForest", num.trees = 2000, mtry = NULL, 
-           nsets = 300, num.trees.pre = 1500, ...) {
+           nsets = 300, num.trees.pre = 1500, splitrule = "extratrees", ...) {
     
     if(class(y)=="matrix") {
       if(ncol(y)==2) {

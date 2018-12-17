@@ -5,7 +5,8 @@
 \title{Random Forest variants for multi-omics covariate data}
 \usage{
 blockfor(X, y, blocks, block.method = "BlockForest", num.trees = 2000,
-  mtry = NULL, nsets = 300, num.trees.pre = 1500, ...)
+  mtry = NULL, nsets = 300, num.trees.pre = 1500,
+  splitrule = "extratrees", ...)
 }
 \arguments{
 \item{X}{Covariate matrix. observations in rows, variables in columns.}
@@ -42,7 +43,9 @@ parameter values generated in 1. that is associated with the smallest OOB estima
 \item{num.trees.pre}{Number of trees in each forest constructed during the optimization of the tuning
 parameter values, see 'nsets' for details.}
 
-\item{...}{Parameters passed to \code{blockForest}, such as \code{num.threads}, \code{splitrule}, etc. See \code{\link{blockForest}} for details.}
+\item{splitrule}{Splitting rule. Default "extratrees" (for computational efficiency). For other options see \code{\link{blockForest}}.}
+
+\item{...}{Parameters passed to \code{blockForest}, such as \code{num.threads}, etc. See \code{\link{blockForest}} for details.}
 }
 \value{
 \code{blockfor} returns a list containing the following components: 

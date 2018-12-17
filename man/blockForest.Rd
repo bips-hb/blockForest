@@ -42,7 +42,7 @@ blockForest(formula = NULL, data = NULL, num.trees = 500,
 
 \item{case.weights}{Weights for sampling of training observations. Observations with larger weights will be selected with higher probability in the bootstrap (or subsampled) samples for the trees.}
 
-\item{splitrule}{Splitting rule. For classification and probability estimation "gini" or "extratrees" with default "gini". For regression "variance", "extratrees" or "maxstat" with default "variance". For survival "logrank", "extratrees", "C" or "maxstat" with default "logrank".}
+\item{splitrule}{Splitting rule, default "extratrees". Other options are "gini" for classification and probability estimation, "variance", or "maxstat" for regression and "logrank", "C" or "maxstat" for survival.}
 
 \item{num.random.splits}{For "extratrees" splitrule.: Number of random splits to consider for each candidate splitting variable.}
 
