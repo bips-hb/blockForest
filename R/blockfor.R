@@ -1,17 +1,40 @@
-##' Random Forest variants for multi-omics covariate data
+# -------------------------------------------------------------------------------
+#   This file is part of blockForest
+#
+# blockForest is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# blockForest is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with blockForest If not, see <http://www.gnu.org/licenses/>.
+# -------------------------------------------------------------------------------
+
+##' Random Forest variants for block-structured covariate data
 ##'
-##' Implements five Random Forest variants suitable for the prediction
-##' of binary, survival and metric outcomes using multi-omics data, that is,
-##' data for which there exist measurements of different types of omics data
-##' and clinical data for each patient. For example, for the task of predicting
+##' Implements five Random Forest variants for prediction
+##' of binary, survival and metric outcomes using block-structured covariate
+##' data, for example, clinical covariates plus measurements of a certain omics data type
+##' or multi-omics data, that is, data for which measurements of different types of omics data
+##' and/or clinical data for each patient exist. For example, for the task of predicting
 ##' survival for each patient there might be available
-##' clinical covariates, gene expression measurements, methylation measurements,
+##' clinical covariates, gene expression measurements, mutation data,
 ##' and copy number variation measurements. \cr
 ##' The group of covariates corresponding to one specific data type is denoted as a 'block'. \cr
+##' NOTE: We strongly recommend using the variant "BlockForest" (or "block forest")
+##' in applications. The other four variants performed worse than "BlockForest"
+##' in the analysis by Hornung & Wright (2018). Using 20 real multi-omics data sets Hornung & Wright (2018) compared all
+##' five variants with each other and with Random Survival Forest as existing
+##' reference method. The ranking of the performances of the five variants was as follows
+##' in the comparison study by Hornung & Wright (2018): 1) "BlockForest", 2) "RandomBlock",
+##' 3) "BlockVarSel", 4) "VarProb", 5) "SplitWeights". \cr
 ##' Each of the five variants uses a different split selection algorithm.
-##' They are denoted as "BlockForest", "RandomBlock",  "BlockVarSel", "VarProb" and "SplitWeights". \cr
-##' They will subject to an upcoming publication by Roman Hornung and
-##' Marvin N. Wright. \cr
+##' For details, see Hornung & Wright (2018). \cr
 ##' Note that this R package is a fork of the R package ranger.
 ##' 
 ##' @param X Covariate matrix. observations in rows, variables in columns.
@@ -24,13 +47,15 @@
 ##' @param blocks A list of length equal to the number M of blocks considered. Each
 ##' entry contains the vector of column indices in 'X' of the covariates in one of the M blocks.
 ##' @param block.method Forest variant to use. One of the following: "BlockForest" (default), "RandomBlock", "BlockVarSel", "VarProb", "SplitWeights".
+##' The latter listing is ordered according to the performances of these variants in the comparison study by Hornung & Wright (2018),
+##' with the best variant being listed first.
 ##' @param num.trees Number of trees in the forest.
 ##' @param mtry This is either a number specifying the number of variables sampled for each
-##' split from all variables (for variants "SplitWeights" and "VarProb")
+##' split from all variables (for variants "VarProb" and "SplitWeights")
 ##' or a vector of length equal to the number of blocks, where the m-th entry of the
 ##' vector gives the number of variables to sample from block m (for variants "BlockForest", "RandomBlock", and "BlockVarSel").
 ##' The default values are sqrt(p_1) + sqrt(p_2) + ... sqrt(p_M) and (sqrt(p_1), sqrt(p_2), ..., sqrt(p_M)), respectively,
-##' where p_m denotes the number of variables in the m-th block (m = 1, ..., M).
+##' where p_m denotes the number of variables in the m-th block (m = 1, ..., M) and sqrt() denoted the square root function.
 ##' @param nsets Number of sets of tuning parameter values generated randomly in the optimization of the tuning parameters.
 ##' Each variant has a tuning parameter for each block, that is, there are M tuning parameters for each variant.
 ##' These tuning parameters are optimized in the following way: 1. Generate random sets of tuning parameter values
@@ -87,8 +112,7 @@
 ##' blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "BlockForest")
-##' # Tuning parameter estimates (see the upcoming publication by Roman Hornung
-##' # and Marvin N. Wright):
+##' # Tuning parameter estimates (see Hornung & Wright (2018)):
 ##' blockforobj$paramvalues
 ##' 
 ##' 
@@ -162,6 +186,7 @@
 ##' @author Roman Hornung, Marvin N. Wright
 ##' @references
 ##' \itemize{
+##'   \item Hornung, R. & Wright, M. N. (2018) Block Forests: random forests for blocks of clinical and omics covariate data. Technical Report, Department of Statistics, University of Munich.
 ##'   \item Breiman, L. (2001). Random forests. Mach Learn, 45(1), 5-32. \url{http://dx.doi.org/10.1023/A:1010933404324}. 
 ##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.
 ##' }

@@ -2,7 +2,6 @@
 
 S3method(importance,blockForest)
 S3method(predict,blockForest)
-S3method(predict,blockForest.forest)
 S3method(predictions,blockForest)
 S3method(predictions,blockForest.prediction)
 S3method(print,blockForest)

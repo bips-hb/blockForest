@@ -17,7 +17,9 @@
 
 ##' Block forests without parameter tuning. 
 ##' Use \code{\link{blockfor}} for standard interface.
-##' Use this function only if no tuning of the Block forest parameters required. 
+##' This function is called by \code{\link{blockfor}}
+##' and will rarely be considered directly by the user (since parameter tuning
+##' is required in applications).
 ##' 
 ##' See \code{\link{blockfor}} and the \code{ranger} package.
 ##' 
@@ -25,7 +27,12 @@
 ##' @param formula Object of class \code{formula} or \code{character} describing the model to fit. Interaction terms supported only for numerical variables.
 ##' @param data Training data of class \code{data.frame}, \code{matrix}, \code{dgCMatrix} (Matrix) or \code{gwaa.data} (GenABEL).
 ##' @param num.trees Number of trees.
-##' @param mtry Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Accepts a vector for Block forests.
+##' @param mtry This is either a number specifying the number of variables sampled for each
+##' split from all variables (for variants "VarProb" and "SplitWeights")
+##' or a vector of length equal to the number of blocks, where the m-th entry of the
+##' vector gives the number of variables to sample from block m (for variants "BlockForest", "RandomBlock", and "BlockVarSel").
+##' The default values are sqrt(p_1) + sqrt(p_2) + ... sqrt(p_M) and (sqrt(p_1), sqrt(p_2), ..., sqrt(p_M)), respectively,
+##' where p_m denotes the number of variables in the m-th block (m = 1, ..., M) and sqrt() denoted the square root function.
 ##' @param importance Variable importance mode, one of 'none', 'impurity', 'impurity_corrected', 'permutation'. The 'impurity' measure is the Gini index for classification, the variance of the responses for regression and the sum of test statistics (see \code{splitrule}) for survival. 
 ##' @param write.forest Save \code{blockForest.forest} object, required for prediction. Set to \code{FALSE} to reduce memory usage if no prediction intended.
 ##' @param probability Grow a probability forest as in Malley et al. (2012). 
@@ -37,11 +44,11 @@
 ##' @param num.random.splits For "extratrees" splitrule.: Number of random splits to consider for each candidate splitting variable.
 ##' @param alpha For "maxstat" splitrule: Significance threshold to allow splitting.
 ##' @param minprop For "maxstat" splitrule: Lower quantile of covariate distribution to be considered for splitting.
-##' @param split.select.weights Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used. Use this for "VarProb" block forest method.
+##' @param split.select.weights Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used. Use this for the "VarProb" variant.
 ##' @param always.split.variables Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.
-##' @param blocks Blocks for the 'Block forest' method. A list of numeric vectors. 
-##' @param block.method Block forest method. Options are: 'BlockForest' (default), 'RandomBlock', 'BlockVarSel', 'SplitWeights'.
-##' @param block.weights Weights for the blocks in Block forests. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='RandomBlock' these are the block sample probabilities.
+##' @param blocks Block memberships of the variables. See \code{\link{blockfor}} for details. 
+##' @param block.method Variant to use. Options are: "BlockForest" (default), "RandomBlock", "BlockVarSel", "SplitWeights".
+##' @param block.weights Tuning parameter values for the blocks in the variants. A vector of length equal to the number of blocks or a list with vectors containing tree-wise values. For block.method='RandomBlock' these are the block sample probabilities.
 ##' @param respect.unordered.factors Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details. 
 ##' @param scale.permutation.importance Scale permutation importance by standard error as in (Breiman 2001). Only applicable if permutation variable importance mode selected.
 ##' @param keep.inbag Save how often observations are in-bag in each tree. 
@@ -89,6 +96,7 @@
 ##' @author Marvin N. Wright
 ##' @references
 ##' \itemize{
+##'   \item Hornung, R. & Wright, M. N. (2018) Block Forests: random forests for blocks of clinical and omics covariate data. Technical Report, Department of Statistics, University of Munich.
 ##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.
 ##'   \item Schmid, M., Wright, M. N. & Ziegler, A. (2016). On the use of Harrell's C for clinical risk prediction via random survival forests. Expert Syst Appl 63:450-459. \url{http://dx.doi.org/10.1016/j.eswa.2016.07.018}. 
 ##'   \item Wright, M. N., Dankowski, T. & Ziegler, A. (2017). Unbiased split variable selection for random survival forests using maximally selected rank statistics. Stat Med. \url{http://dx.doi.org/10.1002/sim.7212}.
@@ -143,12 +151,12 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     if (!("dgCMatrix" %in% class(data))) {
       stop("Error: Currently only sparse data of class 'dgCMatrix' supported.")
     }
-  
+    
     if (!is.null(formula)) {
       stop("Error: Sparse matrices only supported with alternative interface. Use dependent.variable.name instead of formula.")
     }
   }
-    
+  
   ## Formula interface. Use whole data frame is no formula provided and depvarname given
   if (is.null(formula)) {
     if (is.null(dependent.variable.name)) {
@@ -224,7 +232,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     independent.variable.names <- names(data.selected)[-1]
   } else {
     independent.variable.names <- colnames(data.selected)[colnames(data.selected) != dependent.variable.name &
-                                                          colnames(data.selected) != status.variable.name]
+                                                            colnames(data.selected) != status.variable.name]
   }
   
   ## respect.unordered.factors
@@ -235,7 +243,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
       respect.unordered.factors <- "ignore"
     }
   }
-
+  
   ## Old version of respect.unordered.factors
   if (respect.unordered.factors == TRUE) {
     respect.unordered.factors <- "order"
@@ -256,7 +264,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
         names.selected != status.variable.name & 
         names.selected != paste0("Surv(", dependent.variable.name, ", ", status.variable.name, ")")
       recode.idx <- independent.idx & (character.idx | (factor.idx & !ordered.idx))
-
+      
       ## Numeric response
       if (is.factor(response)) {
         num.response <- as.numeric(response)
@@ -265,7 +273,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
       } else {
         num.response <- response
       }
-
+      
       ## Recode each column
       data.selected[recode.idx] <- lapply(data.selected[recode.idx], function(x) {
         ## Order factor levels
@@ -287,7 +295,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   ## Input data and variable names, create final data matrix
   if (!is.null(formula) && treetype == 5) {
     data.final <- data.matrix(cbind(response[, 1], response[, 2],
-                              data.selected[-1]))
+                                    data.selected[-1]))
     colnames(data.final) <- c(dependent.variable.name, status.variable.name,
                               independent.variable.names)
   } else if (is.matrix(data.selected) || inherits(data.selected, "Matrix")) {
@@ -509,7 +517,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   if (minprop < 0 || minprop > 0.5) {
     stop("Error: Invalid value for minprop, please give a value between 0 and 0.5.")
   }
-
+  
   ## Extra trees
   if (!is.numeric(num.random.splits) || num.random.splits < 1) {
     stop("Error: Invalid value for num.random.splits, please give a positive integer.")
@@ -517,7 +525,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   if (splitrule.num == 5 && save.memory && respect.unordered.factors == "partition") {
     stop("Error: save.memory option not possible in extraTrees mode with unordered predictors.")
   }
-
+  
   ## Unordered factors  
   if (respect.unordered.factors == "partition") {
     names.selected <- names(data.selected)
@@ -546,7 +554,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   } else {
     stop("Error: Invalid value for respect.unordered.factors, please use 'order', 'partition' or 'ignore'.")
   }
-
+  
   ## Unordered maxstat splitting not possible
   if (use.unordered.factor.variables && !is.null(splitrule)) {
     if (splitrule == "maxstat") {
@@ -622,7 +630,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
         stop("Error: The 'blocks' argument contains variable indices not present in the data.")
       }
     }
-
+    
     # All blocks +1 for survival (additional status variables)
     if (treetype == 5) {
       blocks <- lapply(blocks, function(x) {
@@ -640,7 +648,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     blocks <- list()
     block.method <- 0
   }
-
+  
   ## Prediction mode always false. Use predict.blockForest() method.
   prediction.mode <- FALSE
   predict.all <- FALSE
@@ -661,7 +669,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   
   ## Clean up
   rm("data.selected")
-
+  
   ## Call Ranger
   result <- rangerCpp(treetype, dependent.variable.name, data.final, variable.names, mtry,
                       num.trees, verbose, seed, num.threads, write.forest, importance.mode,
@@ -682,7 +690,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   if (importance.mode != 0) {
     names(result$variable.importance) <- all.independent.variable.names
   }
-
+  
   ## Set predictions
   if (treetype == 1 && is.factor(response)) {
     result$predictions <- integer.to.factor(result$predictions,

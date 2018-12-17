@@ -26,49 +26,12 @@
 # http://www.imbs-luebeck.de
 # -------------------------------------------------------------------------------
 
-##' Description
-##' 
-##' Details
-##' 
-##' @title blockForest prediction
-##' @param object blockForest \code{blockForest.forest} object.
-##' @param data New test data of class \code{data.frame} or \code{gwaa.data} (GenABEL). 
-##' @param predict.all Return individual predictions for each tree instead of aggregated predictions for all trees. Return a matrix (sample x tree) for classification and regression, a 3d array for probability estimation (sample x class x tree) and survival (sample x time x tree).
-##' @param num.trees Number of trees used for prediction. The first \code{num.trees} in the forest are used.
-##' @param type Type of prediction. One of 'response', 'se', 'terminalNodes', 'quantiles' with default 'response'. See below for details.
-##' @param se.method Method to compute standard errors. One of 'jack', 'infjack' with default 'infjack'. Only applicable if type = 'se'. See below for details.
-##' @param seed Random seed. Default is \code{NULL}, which generates the seed from \code{R}. Set to \code{0} to ignore the \code{R} seed. The seed is used in case of ties in classification mode.
-##' @param num.threads Number of threads. Default is number of CPUs available.
-##' @param verbose Verbose output on or off.
-##' @param inbag.counts Number of times the observations are in-bag in the trees.
-##' @param ... further arguments passed to or from other methods.
-##' @return Object of class \code{blockForest.prediction} with elements
-##'   \tabular{ll}{
-##'       \code{predictions}    \tab Predicted classes/values (only for classification and regression)  \cr
-##'       \code{unique.death.times} \tab Unique death times (only for survival). \cr
-##'       \code{chf} \tab Estimated cumulative hazard function for each sample (only for survival). \cr
-##'       \code{survival} \tab Estimated survival function for each sample (only for survival). \cr
-##'       \code{num.trees}   \tab Number of trees. \cr
-##'       \code{num.independent.variables} \tab Number of independent variables. \cr
-##'       \code{treetype}    \tab Type of forest/tree. Classification, regression or survival. \cr
-##'       \code{num.samples}     \tab Number of samples.
-##'   }
-##'
-##' @references
-##' \itemize{
-##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.
-##'   \item Wager, S., Hastie T., & Efron, B. (2014). Confidence Intervals for Random Forests: The Jackknife and the Infinitesimal Jackknife. J Mach Learn Res 15:1625-1651. \url{http://jmlr.org/papers/v15/wager14a.html}.
-##'   }
-##' @seealso \code{\link{blockForest}}
-##' @author Marvin N. Wright
-##' @importFrom Matrix Matrix
-##' @export
 predict.blockForest.forest <- function(object, data, predict.all = FALSE,
-                                  num.trees = object$num.trees, 
-                                  type = "response", se.method = "infjack",
-                                  seed = NULL, num.threads = NULL,
-                                  verbose = TRUE, inbag.counts = NULL, ...) {
-
+                                       num.trees = object$num.trees, 
+                                       type = "response", se.method = "infjack",
+                                       seed = NULL, num.threads = NULL,
+                                       verbose = TRUE, inbag.counts = NULL, ...) {
+  
   ## GenABEL GWA data
   if ("gwaa.data" %in% class(data)) {
     snp.names <- data@gtdata@snpnames
@@ -81,7 +44,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     gwa.mode <- FALSE
     variable.names <- colnames(data)
   }
-
+  
   ## Check forest argument
   if (class(object) != "blockForest.forest") {
     stop("Error: Invalid class of input object.")
@@ -89,9 +52,9 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     forest <- object
   }
   if (is.null(forest$dependent.varID) || is.null(forest$num.trees) ||
-        is.null(forest$child.nodeIDs) || is.null(forest$split.varIDs) ||
-        is.null(forest$split.values) || is.null(forest$independent.variable.names) ||
-        is.null(forest$treetype)) {
+      is.null(forest$child.nodeIDs) || is.null(forest$split.varIDs) ||
+      is.null(forest$split.values) || is.null(forest$independent.variable.names) ||
+      is.null(forest$treetype)) {
     stop("Error: Invalid forest object.")
   }
   if (forest$treetype == "Survival" && (is.null(forest$status.varID)  ||
@@ -120,11 +83,11 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     stop("Error: Jackknife standard error prediction currently only available for regression.")
   }
   if (type == "se" && se.method == "infjack") {
-   if (forest$treetype == "Survival") {
-     stop("Error: Infinitesimal jackknife standard error prediction not yet available for survival.")
-   } else if (forest$treetype == "Classification") {
-     stop("Error: Not a probability forest. Set probability=TRUE to use the infinitesimal jackknife standard error prediction for classification.")
-   }
+    if (forest$treetype == "Survival") {
+      stop("Error: Infinitesimal jackknife standard error prediction not yet available for survival.")
+    } else if (forest$treetype == "Classification") {
+      stop("Error: Not a probability forest. Set probability=TRUE to use the infinitesimal jackknife standard error prediction for classification.")
+    }
   }
   
   ## Type "se" requires keep.inbag=TRUE
@@ -136,7 +99,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
   if (type == "se") {
     predict.all <- TRUE
   }
-
+  
   ## Create final data
   if (forest$treetype == "Survival") {
     if (forest$dependent.varID > 0 && forest$status.varID > 1) {
@@ -155,15 +118,15 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     } else {
       ## If formula interface used, subset data
       data.selected <- data[, forest$independent.variable.names, drop = FALSE]
-
+      
       ## Arange data as in original data
       data.used <- cbind(0, 0, data.selected)
       variable.names <- c("time", "status", forest$independent.variable.names)
     }
-
-  ## Index of no-recode variables
-  idx.norecode <- c(-(forest$dependent.varID+1), -(forest$status.varID+1))
-
+    
+    ## Index of no-recode variables
+    idx.norecode <- c(-(forest$dependent.varID+1), -(forest$status.varID+1))
+    
   } else {
     ## No survival
     if (ncol(data) == length(forest$independent.variable.names)+1 && forest$dependent.varID > 0) {
@@ -172,7 +135,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     } else {
       ## If formula interface used, subset data
       data.selected <- data[, forest$independent.variable.names, drop = FALSE]
-
+      
       ## Arange data as in original data
       if (forest$dependent.varID == 0) {
         data.used <- cbind(0, data.selected)
@@ -189,17 +152,17 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
                             forest$independent.variable.names[(forest$dependent.varID+1):length(forest$independent.variable.names)])
       }
     }
-
+    
     ## Index of no-recode variables
     idx.norecode <- -(forest$dependent.varID+1)
   }
-
+  
   ## Recode characters
   if (!is.matrix(data.used) && !inherits(data.used, "Matrix")) {
     char.columns <- sapply(data.used, is.character)
     data.used[char.columns] <- lapply(data.used[char.columns], factor)
   }
-
+  
   ## Recode factors if forest grown 'order' mode
   if (!is.null(forest$covariate.levels) && !all(sapply(forest$covariate.levels, is.null))) {
     data.used[, idx.norecode] <- mapply(function(x, y) {
@@ -211,7 +174,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
       }
     }, data.used[, idx.norecode], forest$covariate.levels, SIMPLIFY = !is.data.frame(data.used[, idx.norecode]))
   }
-
+  
   ## Convert to data matrix
   if (is.matrix(data.used) || inherits(data.used, "Matrix")) {
     data.final <- data.used
@@ -219,23 +182,23 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     data.final <- data.matrix(data.used)
   }
   
-
+  
   ## If gwa mode, add snp variable names
   if (gwa.mode) {
     variable.names <- c(variable.names, snp.names)
   }
-
+  
   ## Check missing values
   if (any(is.na(data.final))) {
     offending_columns <- colnames(data.final)[colSums(is.na(data.final)) > 0]
     stop("Missing data in columns: ",
          paste0(offending_columns, collapse = ", "), ".", call. = FALSE)
   }
-
+  
   if (sum(!(forest$independent.variable.names %in% variable.names)) > 0) {
     stop("Error: One or more independent variables not found in data.")
   }
-
+  
   ## Num threads
   ## Default 0 -> detect from system in C++.
   if (is.null(num.threads)) {
@@ -243,12 +206,12 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
   } else if (!is.numeric(num.threads) || num.threads < 0) {
     stop("Error: Invalid value for num.threads")
   }
-
+  
   ## Seed
   if (is.null(seed)) {
     seed <- runif(1 , 0, .Machine$integer.max)
   }
-
+  
   if (forest$treetype == "Classification") {
     treetype <- 1
   } else if (forest$treetype == "Regression") {
@@ -260,7 +223,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
   } else {
     stop("Error: Unknown tree type.")
   }
-
+  
   ## Defaults for variables not needed
   dependent.variable.name <- "none"
   mtry <- 0
@@ -312,15 +275,15 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
                       alpha, minprop, holdout, prediction.type, 
                       num.random.splits, sparse.data, use.sparse.data,
                       blocks, block.weights, block.method)
-
+  
   if (length(result) == 0) {
     stop("User interrupt or internal error.")
   }
-
+  
   ## Prepare results
   result$num.samples <- nrow(data.final)
   result$treetype <- forest$treetype
-
+  
   if (predict.all) {
     if (forest$treetype %in% c("Classification", "Regression")) {
       if (is.list(result$predictions)) {
@@ -369,7 +332,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
       result$predictions <- matrix(result$predictions, nrow = 1)
     }
   }
-
+  
   ## Compute Jackknife
   if (type == "se") {
     ## Aggregated predictions
@@ -378,7 +341,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     } else {
       yhat <- rowMeans(result$predictions)
     }
-
+    
     ## Get inbag counts, keep only observations that are OOB at least once
     inbag.counts <- simplify2array(inbag.counts) 
     if (is.vector(inbag.counts)) {
@@ -394,7 +357,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
     if (all(!oob)) {
       stop("Error: No OOB observations found, consider increasing num.trees or reducing sample.fraction.")
     }
-
+    
     if (se.method == "jack") {
       ## Compute Jackknife
       oob.count <- rowSums(oob)
@@ -434,16 +397,26 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
       result$predictions <- result$predictions[, forest$levels, drop = FALSE]
     }
   }
-
+  
   class(result) <- "blockForest.prediction"
   return(result)
 }
 
 ##' This function is to be applied to the entry 'forest' of the output of
 ##' \code{\link{blockfor}}. See the example section for illustration.
+##'
+##' For \code{type = 'response'} (the default), the predicted classes (classification), predicted numeric values (regression), predicted probabilities (probability estimation) or survival probabilities (survival) are returned. 
+##' For \code{type = 'se'}, the standard error of the predictions are returned (regression only). The jackknife-after-bootstrap or infinitesimal jackknife for bagging is used to estimate the standard errors based on out-of-bag predictions. See Wager et al. (2014) for details.
+##' For \code{type = 'terminalNodes'}, the IDs of the terminal node in each tree for each observation in the given dataset are returned.
+##' For \code{type = 'quantiles'}, the selected quantiles for each observation are estimated. See Meinshausen (2006) for details.
 ##' 
-##' @title Prediction using Random Forest variants for multi-omics data
-##' @param object blockForest \code{blockForest} object.
+##' If \code{type = 'se'} is selected, the method to estimate the variances can be chosen with \code{se.method}. Set \code{se.method = 'jack'} for jackknife-after-bootstrap and \code{se.method = 'infjack'} for the infinitesimal jackknife for bagging.
+##' 
+##' For classification and \code{predict.all = TRUE}, a factor levels are returned as numerics.
+##' To retrieve the corresponding factor levels, use \code{rf$forest$levels}, if \code{rf} is the ranger object.
+##' 
+##' @title Prediction using Random Forest variants for block-structured covariate data
+##' @param object \code{blockForest} object.
 ##' @param data New test data of class \code{data.frame} or \code{gwaa.data} (GenABEL).
 ##' @param predict.all Return individual predictions for each tree instead of aggregated predictions for all trees. Return a matrix (sample x tree) for classification and regression, a 3d array for probability estimation (sample x class x tree) and survival (sample x time x tree).
 ##' @param num.trees Number of trees used for prediction. The first \code{num.trees} in the forest are used.
@@ -558,11 +531,11 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
 ##' @author Marvin N. Wright
 ##' @export
 predict.blockForest <- function(object, data = NULL, predict.all = FALSE,
-                           num.trees = object$num.trees,
-                           type = "response", se.method = "infjack",
-                           quantiles = c(0.1, 0.5, 0.9), 
-                           seed = NULL, num.threads = NULL,
-                           verbose = TRUE, ...) {
+                                num.trees = object$num.trees,
+                                type = "response", se.method = "infjack",
+                                quantiles = c(0.1, 0.5, 0.9), 
+                                seed = NULL, num.threads = NULL,
+                                verbose = TRUE, ...) {
   forest <- object$forest
   if (is.null(forest)) {
     stop("Error: No saved forest in blockForest object. Please set write.forest to TRUE when calling blockForest.")
@@ -601,7 +574,7 @@ predict.blockForest <- function(object, data = NULL, predict.all = FALSE,
                    num.independent.variables = object$num.independent.variables,
                    num.trees = num.trees)
     class(result) <- "blockForest.prediction"
-
+    
     ## Compute quantiles of distribution
     result$predictions <- t(apply(node.values, 1, quantile, quantiles, na.rm=TRUE))
     if (nrow(result$predictions) != result$num.samples) {
@@ -613,7 +586,7 @@ predict.blockForest <- function(object, data = NULL, predict.all = FALSE,
   } else {
     ## Non-quantile prediction
     if (is.null(data)) {
-     stop("Error: Argument 'data' is required for non-quantile prediction.") 
+      stop("Error: Argument 'data' is required for non-quantile prediction.") 
     }
     predict(forest, data, predict.all, num.trees, type, se.method, seed, num.threads, verbose, object$inbag.counts, ...)
   }

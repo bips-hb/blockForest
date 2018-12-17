@@ -26,7 +26,12 @@ blockForest(formula = NULL, data = NULL, num.trees = 500,
 
 \item{num.trees}{Number of trees.}
 
-\item{mtry}{Number of variables to possibly split at in each node. Default is the (rounded down) square root of the number variables. Accepts a vector for Block forests.}
+\item{mtry}{This is either a number specifying the number of variables sampled for each
+split from all variables (for variants "VarProb" and "SplitWeights")
+or a vector of length equal to the number of blocks, where the m-th entry of the
+vector gives the number of variables to sample from block m (for variants "BlockForest", "RandomBlock", and "BlockVarSel").
+The default values are sqrt(p_1) + sqrt(p_2) + ... sqrt(p_M) and (sqrt(p_1), sqrt(p_2), ..., sqrt(p_M)), respectively,
+where p_m denotes the number of variables in the m-th block (m = 1, ..., M) and sqrt() denoted the square root function.}
 
 \item{importance}{Variable importance mode, one of 'none', 'impurity', 'impurity_corrected', 'permutation'. The 'impurity' measure is the Gini index for classification, the variance of the responses for regression and the sum of test statistics (see \code{splitrule}) for survival.}
 
@@ -50,15 +55,15 @@ blockForest(formula = NULL, data = NULL, num.trees = 500,
 
 \item{minprop}{For "maxstat" splitrule: Lower quantile of covariate distribution to be considered for splitting.}
 
-\item{split.select.weights}{Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used. Use this for "VarProb" block forest method.}
+\item{split.select.weights}{Numeric vector with weights between 0 and 1, representing the probability to select variables for splitting. Alternatively, a list of size num.trees, containing split select weight vectors for each tree can be used. Use this for the "VarProb" variant.}
 
 \item{always.split.variables}{Character vector with variable names to be always selected in addition to the \code{mtry} variables tried for splitting.}
 
-\item{blocks}{Blocks for the 'Block forest' method. A list of numeric vectors.}
+\item{blocks}{Block memberships of the variables. See \code{\link{blockfor}} for details.}
 
-\item{block.method}{Block forest method. Options are: 'BlockForest' (default), 'RandomBlock', 'BlockVarSel', 'SplitWeights'.}
+\item{block.method}{Variant to use. Options are: "BlockForest" (default), "RandomBlock", "BlockVarSel", "SplitWeights".}
 
-\item{block.weights}{Weights for the blocks in Block forests. A vector of numeric weights or a list with vectors containing tree-wise numeric weights. For block.method='RandomBlock' these are the block sample probabilities.}
+\item{block.weights}{Tuning parameter values for the blocks in the variants. A vector of length equal to the number of blocks or a list with vectors containing tree-wise values. For block.method='RandomBlock' these are the block sample probabilities.}
 
 \item{respect.unordered.factors}{Handling of unordered factor covariates. One of 'ignore', 'order' and 'partition'. For the "extratrees" splitrule the default is "partition" for all other splitrules 'ignore'. Alternatively TRUE (='order') or FALSE (='ignore') can be used. See below for details.}
 
@@ -108,7 +113,9 @@ Object of class \code{blockForest} with elements
 \description{
 Block forests without parameter tuning. 
 Use \code{\link{blockfor}} for standard interface.
-Use this function only if no tuning of the Block forest parameters required.
+This function is called by \code{\link{blockfor}}
+and will rarely be considered directly by the user (since parameter tuning
+is required in applications).
 }
 \details{
 See \code{\link{blockfor}} and the \code{ranger} package.
@@ -129,6 +136,7 @@ blockForest(Species ~ ., iris)
 }
 \references{
 \itemize{
+  \item Hornung, R. & Wright, M. N. (2018) Block Forests: random forests for blocks of clinical and omics covariate data. Technical Report, Department of Statistics, University of Munich.
   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.
   \item Schmid, M., Wright, M. N. & Ziegler, A. (2016). On the use of Harrell's C for clinical risk prediction via random survival forests. Expert Syst Appl 63:450-459. \url{http://dx.doi.org/10.1016/j.eswa.2016.07.018}. 
   \item Wright, M. N., Dankowski, T. & Ziegler, A. (2017). Unbiased split variable selection for random survival forests using maximally selected rank statistics. Stat Med. \url{http://dx.doi.org/10.1002/sim.7212}.

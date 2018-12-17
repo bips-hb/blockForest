@@ -2,7 +2,7 @@
 % Please edit documentation in R/predict.R
 \name{predict.blockForest}
 \alias{predict.blockForest}
-\title{Prediction using Random Forest variants for multi-omics data}
+\title{Prediction using Random Forest variants for block-structured covariate data}
 \usage{
 \method{predict}{blockForest}(object, data = NULL, predict.all = FALSE,
   num.trees = object$num.trees, type = "response",
@@ -10,7 +10,7 @@
   num.threads = NULL, verbose = TRUE, ...)
 }
 \arguments{
-\item{object}{blockForest \code{blockForest} object.}
+\item{object}{\code{blockForest} object.}
 
 \item{data}{New test data of class \code{data.frame} or \code{gwaa.data} (GenABEL).}
 
@@ -48,6 +48,17 @@ Object of class \code{blockForest.prediction} with elements
 \description{
 This function is to be applied to the entry 'forest' of the output of
 \code{\link{blockfor}}. See the example section for illustration.
+}
+\details{
+For \code{type = 'response'} (the default), the predicted classes (classification), predicted numeric values (regression), predicted probabilities (probability estimation) or survival probabilities (survival) are returned. 
+For \code{type = 'se'}, the standard error of the predictions are returned (regression only). The jackknife-after-bootstrap or infinitesimal jackknife for bagging is used to estimate the standard errors based on out-of-bag predictions. See Wager et al. (2014) for details.
+For \code{type = 'terminalNodes'}, the IDs of the terminal node in each tree for each observation in the given dataset are returned.
+For \code{type = 'quantiles'}, the selected quantiles for each observation are estimated. See Meinshausen (2006) for details.
+
+If \code{type = 'se'} is selected, the method to estimate the variances can be chosen with \code{se.method}. Set \code{se.method = 'jack'} for jackknife-after-bootstrap and \code{se.method = 'infjack'} for the infinitesimal jackknife for bagging.
+
+For classification and \code{predict.all = TRUE}, a factor levels are returned as numerics.
+To retrieve the corresponding factor levels, use \code{rf$forest$levels}, if \code{rf} is the ranger object.
 }
 \examples{
 # NOTE: There is no association between covariates and response for the
