@@ -1,13 +1,13 @@
-#' Parse formula
-#' 
-#' Parse formula and return dataset containing selected columns. 
-#' Interactions are supported for numerical columns only. 
-#' An interaction column is the product of all interacting columns.
-#'
-#' @param formula Object of class \code{formula} or \code{character} describing the model to fit.
-#' @param data Training data of class \code{data.frame}.
-#'
-#' @return Dataset including selected columns and interactions.
+# Parse formula
+# 
+# Parse formula and return dataset containing selected columns. 
+# Interactions are supported for numerical columns only. 
+# An interaction column is the product of all interacting columns.
+#
+# @param formula Object of class \code{formula} or \code{character} describing the model to fit.
+# @param data Training data of class \code{data.frame}.
+#
+# @return Dataset including selected columns and interactions.
 parse.formula <- function(formula, data) {
   f <- as.formula(formula)
   t <- terms(f, data = data)
