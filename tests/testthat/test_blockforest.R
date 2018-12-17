@@ -83,7 +83,7 @@ test_that("A block with mtry=0 is not selected", {
                block.weights = c(.5, .5),
                mtry = c(0, 1))
   split_vars <- sort(unique(unlist(rf$forest$split.varIDs)))
-  expect_equal(split_vars, c(0, 3, 4))
+  expect_true(all(split_vars %in% c(0, 3, 4)))
 })
 
 test_that("A block with weight=0 is not selected", {
@@ -92,7 +92,7 @@ test_that("A block with weight=0 is not selected", {
                block.weights = c(0, 1),
                mtry = c(1, 2))
   split_vars <- sort(unique(unlist(rf$forest$split.varIDs)))
-  expect_equal(split_vars, c(0, 3, 4))
+  expect_true(all(split_vars %in% c(0, 3, 4)))
 })
 
 test_that("Different block coding for survival", {
