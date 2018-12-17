@@ -1,7 +1,3 @@
-
-##' @title CvalueOptimizer class
-##' @description Virtual class for Random forest. 
-##' Contains all fields and methods used in all Forest subclasses.
 ##' @importFrom parallel mclapply
 ##' @import methods
 CvalueOptimizer <- 
@@ -14,7 +10,7 @@ CvalueOptimizer <-
                 trees = "list",
                 treetype = "character",
                 blocks = "list",
-				        block.method = "character"),
+                block.method = "character"),
               methods = list(
                 
                 optimizeCvalues = function(...) {

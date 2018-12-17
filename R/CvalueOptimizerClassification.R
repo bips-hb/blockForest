@@ -1,7 +1,3 @@
-
-##' @title Classification forest class
-##' @description Subclass for classification forest. 
-##' Contains all fields and methods used special for classification forests.
 CvalueOptimizerClassification <- 
   setRefClass("CvalueOptimizerClassification", 
               contains = "CvalueOptimizer", 
