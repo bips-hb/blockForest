@@ -26,14 +26,6 @@
 # http://www.imbs-luebeck.de
 # -------------------------------------------------------------------------------
 
-##' Print contents of blockForest object.
-##'
-##'
-##' @title Print blockForest
-##' @param x Object of class 'blockForest'.
-##' @param ... Further arguments passed to or from other methods.
-##' @seealso \code{\link{blockForest}}
-##' @author Marvin N. Wright
 ##' @export
 print.blockForest <- function(x, ...) {
   cat("blockForest result\n\n")
@@ -61,13 +53,6 @@ print.blockForest <- function(x, ...) {
   }
 }
 
-##' Print contents of blockForest forest object.
-##'
-##'
-##' @title Print blockForest forest
-##' @param x Object of class 'blockForest.forest'.
-##' @param ... further arguments passed to or from other methods.
-##' @author Marvin N. Wright
 ##' @export
 print.blockForest.forest <- function(x, ...) {
   cat("blockForest forest object\n\n")
@@ -78,13 +63,6 @@ print.blockForest.forest <- function(x, ...) {
   }
 }
 
-##' Print contents of blockForest prediction object.
-##'
-##'
-##' @title Print blockForest prediction
-##' @param x Object of class 'blockForest.prediction'.
-##' @param ... further arguments passed to or from other methods.
-##' @author Marvin N. Wright
 ##' @export
 print.blockForest.prediction <- function(x, ...) {
   cat("blockForest prediction\n\n")
