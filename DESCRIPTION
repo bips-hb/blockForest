@@ -1,16 +1,29 @@
 Package: blockForest
 Type: Package
-Title: Random Forests for Blocks of Clinical and Omics Covariate Data
-Version: 0.1.5
-Date: 2018-12-04
+Title: Block Forests: Random Forests for Blocks of Clinical and Omics Covariate Data
+Version: 0.1.6
+Date: 2018-12-17
 Author: Roman Hornung, Marvin N. Wright
 Maintainer: Roman Hornung <hornung@ibe.med.uni-muenchen.de>
-Description: A random forest variant suitable for the prediction of binary, 
-  survival and continuous outcomes using multi-omics data, i.e.,
-  data for which measurements of different types of omics data
-  and/or clinical data for each patient exist. Examples include
-  gene expression measurements, methylation measurements,
+Description: A random forest variant 'block forest' ('BlockForest') tailored to the prediction of binary, 
+  survival and continuous outcomes using block-structured covariate
+  data, for example, clinical covariates plus measurements of a certain omics data type
+  or multi-omics data, that is, data for which measurements of different types of omics data
+  and/or clinical data for each patient exist. Examples of different
+  omics data types include gene expression measurements, mutation data
   and copy number variation measurements.
+  Block forest are presented in Hornung & Wright (2018).
+  The package includes four other random forest variants
+  for multi-omics data: 'RandomBlock', 'BlockVarSel', 'VarProb',
+  and 'SplitWeights'. These were also considered in Hornung & Wright (2018),
+  but performed worse than block forest in their comparison study
+  based on 20 real multi-omics data sets. Therefore, we recommend 
+  to use block forest ('BlockForest') in applications. The other random forest
+  variants can, however, be consulted for academic purposes, for example,
+  in the context of further methodological developments.
+  Reference:
+  Hornung, R. & Wright, M. N. (2018) Block Forests: random forests for 
+  blocks of clinical and omics covariate data. Technical Report, Department of Statistics, University of Munich.
 License: GPL-3
 Imports: Rcpp (>= 0.11.2), Matrix, methods, survival
 LinkingTo: Rcpp, RcppEigen
@@ -18,4 +31,3 @@ Depends: R (>= 3.1)
 Suggests: testthat
 RoxygenNote: 6.1.0
 NeedsCompilation: yes
-Packaged: 2018-04-27 17:32:16 UTC; hornung
