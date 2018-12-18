@@ -105,11 +105,8 @@ ybin <- factor(sample(c(0,1), size=40, replace=TRUE), levels=c(0,1))
 # Survival outcome:
 ysurv <- cbind(rnorm(40), sample(c(0,1), size=40, replace=TRUE))
 
-
-
-
-# Application of the five different variants in the case of a binary outcome:
-#############################################################################
+# Application to binary outcome:
+################################
 
 blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
@@ -117,72 +114,12 @@ blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
 # Tuning parameter estimates (see Hornung & Wright (2018)):
 blockforobj$paramvalues
 
-
-
-blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "RandomBlock")
-blockforobj$paramvalues
-
-
-
-blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "BlockVarSel")
-blockforobj$paramvalues
-
-
-
-blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "VarProb")
-blockforobj$paramvalues
-
-
-
-blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "SplitWeights")
-blockforobj$paramvalues
-
-
-
-
-
-# Application of the five different variants in the case of a survival outcome:
-###############################################################################
+# Application to survival outcome:
+##################################
 
 blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
                         block.method = "BlockForest")
-blockforobj$paramvalues
-
-
-
-blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "RandomBlock")
-blockforobj$paramvalues
-
-
-
-blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "BlockVarSel")
-blockforobj$paramvalues
-
-
-
-blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "VarProb")
-blockforobj$paramvalues
-
-
-
-blockforobj <- blockfor(X, ysurv, num.trees = 100, replace = TRUE, blocks=blocks,
-                        nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
-                        block.method = "SplitWeights")
 blockforobj$paramvalues
 
 }
