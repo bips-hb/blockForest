@@ -179,9 +179,9 @@ blockfor <-
 
 								        if(block.method!="VarProb")
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
-                              blocks = blocks,
-                              block.weights = paramvalues,
-                              mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                              blocks = blocks, block.weights = paramvalues,
+                              mtry = mtry, keep.inbag = TRUE, 
+                              block.method=block.method, splitrule = splitrule, ...)
       else {
         
         pm <- sapply(blocks, length)
@@ -191,7 +191,8 @@ blockfor <-
 
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
                               split.select.weights = splitweights,
-                              mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                              mtry = mtry, keep.inbag = TRUE, 
+                              block.method=block.method, splitrule = splitrule, ...)
 							  
 	        }
 							
@@ -206,9 +207,9 @@ blockfor <-
 
 	        if(block.method!="VarProb")
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees,
-                              blocks = blocks,
-                              block.weights = paramvalues,
-                              mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                              blocks = blocks, block.weights = paramvalues,
+                              mtry = mtry, keep.inbag = TRUE, 
+                              block.method=block.method, splitrule = splitrule, ...)
       else {
         
         pm <- sapply(blocks, length)
@@ -218,7 +219,8 @@ blockfor <-
 
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees,
                               split.select.weights = splitweights,
-                              mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                              mtry = mtry, keep.inbag = TRUE, 
+                              block.method=block.method, splitrule = splitrule, ...)
 							  
 	        }
       
@@ -232,9 +234,9 @@ blockfor <-
       
       if(block.method!="VarProb")
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
-                              blocks = blocks,
-                              block.weights = paramvalues,
-                              mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                              blocks = blocks, block.weights = paramvalues,
+                              mtry = mtry, keep.inbag = TRUE, 
+                              block.method=block.method, splitrule = splitrule, ...)
       else {
         
         pm <- sapply(blocks, length)
@@ -244,7 +246,8 @@ blockfor <-
 
         forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
                               split.select.weights = splitweights,
-                              mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                              mtry = mtry, keep.inbag = TRUE, 
+                              block.method=block.method, splitrule = splitrule, ...)
         
       }
       
