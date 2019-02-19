@@ -26,10 +26,11 @@ CvalueOptimizerRegression <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -69,9 +70,10 @@ CvalueOptimizerRegression <-
                       for(blocki in seq(along=blocks))
                         splitweights[blocks[[blocki]]] <- cvalues[blocki]
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre,
                                             split.select.weights = splitweights,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -105,10 +107,11 @@ CvalueOptimizerRegression <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -142,10 +145,11 @@ CvalueOptimizerRegression <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -179,10 +183,11 @@ CvalueOptimizerRegression <-
                       cvalues <- diff(c(0, sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       

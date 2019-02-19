@@ -166,6 +166,11 @@ blockfor <-
     ## Factors to numeric
     model.data[, -1] <- sapply(model.data[, -1] , as.numeric)
     
+    ## Convert survival data
+    if (treetype == "Survival") {
+      model.data <- data.frame(time = model.data[, 1][, 1], status = model.data[, 1][, 2], model.data[, -1])
+    }
+    
     ## Create forest object
     if (treetype == "Classification") {
 
@@ -173,12 +178,13 @@ blockfor <-
                                                        mtry = as.integer(mtry), 
                                                        data = model.data, 
                                                        response_levels = levels(model.data[, 1]), 
-                                                       blocks = blocks, block.method=block.method)
+                                                       blocks = blocks, block.method=block.method, 
+                                                       splitrule = splitrule)
       
       paramvalues <- cvalueoptim$optimizeCvalues(...)
 
 								        if(block.method!="VarProb")
-        forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
+        forest <- blockForest(dependent.variable.name = "y", data = model.data, num.trees = num.trees, 
                               blocks = blocks, block.weights = paramvalues,
                               mtry = mtry, keep.inbag = TRUE, 
                               block.method=block.method, splitrule = splitrule, ...)
@@ -189,7 +195,7 @@ blockfor <-
         for(blocki in seq(along=blocks))
           splitweights[blocks[[blocki]]] <- paramvalues[blocki]
 
-        forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
+        forest <- blockForest(dependent.variable.name = "y", data = model.data, num.trees = num.trees, 
                               split.select.weights = splitweights,
                               mtry = mtry, keep.inbag = TRUE, 
                               block.method=block.method, splitrule = splitrule, ...)
@@ -201,12 +207,13 @@ blockfor <-
       
       cvalueoptim <- CvalueOptimizerRegression$new(nsets = as.integer(nsets), num.trees.pre = as.integer(num.trees.pre), mtry = as.integer(mtry), 
                                                    data = model.data,
-                                                   blocks = blocks, block.method=block.method)
+                                                   blocks = blocks, block.method=block.method, 
+                                                   splitrule = splitrule)
       
       paramvalues <- cvalueoptim$optimizeCvalues(...)
 
 	        if(block.method!="VarProb")
-        forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees,
+        forest <- blockForest(dependent.variable.name = "y", data = model.data, num.trees = num.trees,
                               blocks = blocks, block.weights = paramvalues,
                               mtry = mtry, keep.inbag = TRUE, 
                               block.method=block.method, splitrule = splitrule, ...)
@@ -217,7 +224,7 @@ blockfor <-
         for(blocki in seq(along=blocks))
           splitweights[blocks[[blocki]]] <- paramvalues[blocki]
 
-        forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees,
+        forest <- blockForest(dependent.variable.name = "y", data = model.data, num.trees = num.trees,
                               split.select.weights = splitweights,
                               mtry = mtry, keep.inbag = TRUE, 
                               block.method=block.method, splitrule = splitrule, ...)
@@ -228,12 +235,14 @@ blockfor <-
       
       cvalueoptim <- CvalueOptimizerSurvival$new(nsets = as.integer(nsets), num.trees.pre = as.integer(num.trees.pre),
                                                  mtry = as.integer(mtry), 
-                                                 data = model.data, blocks = blocks, block.method=block.method)
+                                                 data = model.data, blocks = blocks, block.method=block.method, 
+                                                 splitrule = splitrule)
       
       paramvalues <- cvalueoptim$optimizeCvalues(...)
       
       if(block.method!="VarProb")
-        forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
+        forest <- blockForest(dependent.variable.name = "time", status.variable.name = "status", 
+                              data = model.data, num.trees = num.trees, 
                               blocks = blocks, block.weights = paramvalues,
                               mtry = mtry, keep.inbag = TRUE, 
                               block.method=block.method, splitrule = splitrule, ...)
@@ -244,7 +253,8 @@ blockfor <-
         for(blocki in seq(along=blocks))
           splitweights[blocks[[blocki]]] <- paramvalues[blocki]
 
-        forest <- blockForest(y ~ ., data = model.data, num.trees = num.trees, 
+        forest <- blockForest(dependent.variable.name = "time", status.variable.name = "status", 
+                              data = model.data, num.trees = num.trees, 
                               split.select.weights = splitweights,
                               mtry = mtry, keep.inbag = TRUE, 
                               block.method=block.method, splitrule = splitrule, ...)
