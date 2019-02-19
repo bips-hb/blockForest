@@ -26,7 +26,8 @@ CvalueOptimizerSurvival <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
+                      forest <- blockForest(dependent.variable.name = "time", status.variable.name = "status", 
+                                            data = data, num.trees = num.trees.pre,
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
@@ -69,7 +70,8 @@ CvalueOptimizerSurvival <-
                       for(blocki in seq(along=blocks))
                         splitweights[blocks[[blocki]]] <- cvalues[blocki]
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
+                      forest <- blockForest(dependent.variable.name = "time", status.variable.name = "status", 
+                                            data = data, num.trees = num.trees.pre,
                                             split.select.weights = splitweights,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
                                             splitrule = splitrule, write.forest = FALSE, ...)
@@ -105,7 +107,8 @@ CvalueOptimizerSurvival <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
+                      forest <- blockForest(dependent.variable.name = "time", status.variable.name = "status", 
+                                            data = data, num.trees = num.trees.pre,
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
@@ -143,7 +146,8 @@ CvalueOptimizerSurvival <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "time", status.variable.name = "status", 
+                                            data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method,
@@ -182,7 +186,8 @@ CvalueOptimizerSurvival <-
                       cvalues <- diff(c(0, sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
+                      forest <- blockForest(dependent.variable.name = "time", status.variable.name = "status", 
+                                            data = data, num.trees = num.trees.pre,
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 

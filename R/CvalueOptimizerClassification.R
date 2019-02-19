@@ -27,7 +27,7 @@ CvalueOptimizerClassification <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
@@ -71,7 +71,7 @@ CvalueOptimizerClassification <-
                       for(blocki in seq(along=blocks))
                         splitweights[blocks[[blocki]]] <- cvalues[blocki]
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre,
                                             split.select.weights = splitweights,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
                                             splitrule = splitrule, write.forest = FALSE, ...)
@@ -108,7 +108,7 @@ CvalueOptimizerClassification <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre,
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
@@ -146,7 +146,7 @@ CvalueOptimizerClassification <-
                       cvalues <- sample(c(sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
@@ -184,7 +184,7 @@ CvalueOptimizerClassification <-
                       cvalues <- diff(c(0, sort(runif(M-1)), 1))
                       cvaluesall[[l]] <- cvalues  
                       
-                      forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
+                      forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
                                             mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
