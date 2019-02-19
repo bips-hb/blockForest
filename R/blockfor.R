@@ -173,7 +173,8 @@ blockfor <-
                                                        mtry = as.integer(mtry), 
                                                        data = model.data, 
                                                        response_levels = levels(model.data[, 1]), 
-                                                       blocks = blocks, block.method=block.method)
+                                                       blocks = blocks, block.method=block.method, 
+                                                       splitrule = splitrule)
       
       paramvalues <- cvalueoptim$optimizeCvalues(...)
 
@@ -201,7 +202,8 @@ blockfor <-
       
       cvalueoptim <- CvalueOptimizerRegression$new(nsets = as.integer(nsets), num.trees.pre = as.integer(num.trees.pre), mtry = as.integer(mtry), 
                                                    data = model.data,
-                                                   blocks = blocks, block.method=block.method)
+                                                   blocks = blocks, block.method=block.method, 
+                                                   splitrule = splitrule)
       
       paramvalues <- cvalueoptim$optimizeCvalues(...)
 
@@ -228,7 +230,8 @@ blockfor <-
       
       cvalueoptim <- CvalueOptimizerSurvival$new(nsets = as.integer(nsets), num.trees.pre = as.integer(num.trees.pre),
                                                  mtry = as.integer(mtry), 
-                                                 data = model.data, blocks = blocks, block.method=block.method)
+                                                 data = model.data, blocks = blocks, block.method=block.method, 
+                                                 splitrule = splitrule)
       
       paramvalues <- cvalueoptim$optimizeCvalues(...)
       

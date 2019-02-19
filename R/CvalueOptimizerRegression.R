@@ -29,7 +29,8 @@ CvalueOptimizerRegression <-
                       forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -71,7 +72,8 @@ CvalueOptimizerRegression <-
                       
                       forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre,
                                             split.select.weights = splitweights,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -108,7 +110,8 @@ CvalueOptimizerRegression <-
                       forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -145,7 +148,8 @@ CvalueOptimizerRegression <-
                       forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
@@ -182,7 +186,8 @@ CvalueOptimizerRegression <-
                       forest <- blockForest(y ~ ., data = data, num.trees = num.trees.pre, 
                                             blocks = blocks,
                                             block.weights = cvalues,
-                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, ...)
+                                            mtry = mtry, keep.inbag = TRUE, block.method=block.method, 
+                                            splitrule = splitrule, write.forest = FALSE, ...)
                       
                       errs[l] <- forest$prediction.error
                       
