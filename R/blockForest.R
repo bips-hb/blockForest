@@ -174,14 +174,14 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     if (status.variable.name == "none" || is.null(status.variable.name)) {
       if (colnames(data.selected)[1] != dependent.variable.name) {
         dependent.varID <- which(colnames(data.selected) == dependent.variable.name)
-        data.selected <- data.frame(data.selected[, dependent.varID], data.selected[, -dependent.varID, drop = FALSE])
+        data.selected <- cbind(data.selected[, dependent.varID], data.selected[, -dependent.varID, drop = FALSE])
         colnames(data.selected)[1] <- dependent.variable.name
       }
     } else {
       if ((colnames(data.selected)[1] != dependent.variable.name) || (colnames(data.selected)[2] != status.variable.name)) {
         dependent.varID <- which(colnames(data.selected) == dependent.variable.name)
         status.varID <- which(colnames(data.selected) == status.variable.name)
-        data.selected <- data.frame(data.selected[, c(dependent.varID, status.varID)], data.selected[, c(-dependent.varID, -status.varID), drop = FALSE])
+        data.selected <- cbind(data.selected[, c(dependent.varID, status.varID)], data.selected[, c(-dependent.varID, -status.varID), drop = FALSE])
         colnames(data.selected)[c(1,2)] <- c(dependent.variable.name, status.variable.name)
       }
     }
