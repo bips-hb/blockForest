@@ -6,7 +6,7 @@
 \usage{
 blockfor(X, y, blocks, block.method = "BlockForest", num.trees = 2000,
   mtry = NULL, nsets = 300, num.trees.pre = 1500,
-  splitrule = "extratrees", ...)
+  splitrule = "extratrees", always.select.block = 0, ...)
 }
 \arguments{
 \item{X}{Covariate matrix. observations in rows, variables in columns.}
@@ -46,6 +46,8 @@ parameter values generated in 1. that is associated with the smallest OOB estima
 parameter values, see 'nsets' for details.}
 
 \item{splitrule}{Splitting rule. Default "extratrees" (for computational efficiency). For other options see \code{\link{blockForest}}.}
+
+\item{always.select.block}{Number of block to make always available for splitting (e.g. clinical covariates).}
 
 \item{...}{Parameters passed to \code{blockForest}, such as \code{num.threads}, etc. See \code{\link{blockForest}} for details.}
 }

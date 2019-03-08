@@ -252,9 +252,6 @@ void Tree::createPossibleSplitVarSubset(std::vector<std::vector<size_t>>& result
     std::vector<size_t> block_vars = std::vector<size_t>();
     block_vars.reserve(mtry[i]);
 
-    // Always use deterministic variables
-    std::copy(deterministic_varIDs->begin(), deterministic_varIDs->end(), std::inserter(block_vars, block_vars.end()));
-
     // Randomly add non-deterministic variables (according to weights if needed)
     if (split_select_weights->empty()) {
       if (blocks->size() > 0 && block_method != BLOCK_SPLITWEIGHTS) {
@@ -275,6 +272,10 @@ void Tree::createPossibleSplitVarSubset(std::vector<std::vector<size_t>>& result
           *split_select_weights);
     }
 
+    // Always use deterministic variables
+    std::copy(deterministic_varIDs->begin(), deterministic_varIDs->end(), std::inserter(block_vars, block_vars.end()));
+
+
     result.push_back(block_vars);
   }
 }
@@ -294,9 +295,6 @@ void Tree::createPossibleSplitVarSubsetOneBlock(std::vector<std::vector<size_t>>
 
   std::vector<size_t> block_vars = std::vector<size_t>();
   block_vars.reserve(mtry[selected_block]);
-
-  // Always use deterministic variables
-  std::copy(deterministic_varIDs->begin(), deterministic_varIDs->end(), std::inserter(block_vars, block_vars.end()));
 
   // Randomly add non-deterministic variables (according to weights if needed)
   if (split_select_weights->empty()) {
@@ -319,6 +317,9 @@ void Tree::createPossibleSplitVarSubsetOneBlock(std::vector<std::vector<size_t>>
     drawWithoutReplacementWeighted(block_vars, random_number_generator, *split_select_varIDs, num_draws,
         *split_select_weights);
   }
+
+  // Always use deterministic variables
+  std::copy(deterministic_varIDs->begin(), deterministic_varIDs->end(), std::inserter(block_vars, block_vars.end()));
 
   result.push_back(block_vars);
 
@@ -343,6 +344,13 @@ void Tree::createPossibleSplitVarSubsetSampleBlocks(std::vector<std::vector<size
         sampled_blocks[i] = true;
         one_block_true = true;
       }
+    }
+  }
+
+  // Always split blocks are detected by mtry=p
+  for (size_t i = 0; i < mtry.size(); ++i) {
+    if (mtry[i] == (*blocks)[i].size()) {
+      sampled_blocks[i] = true;
     }
   }
 

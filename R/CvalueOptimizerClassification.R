@@ -65,6 +65,11 @@ CvalueOptimizerClassification <-
                     for(l in 1:nsets) {
                       
                       cvalues <- sapply(pm, function(x) sample(c(runif(1, 0, sqrt(x)/x), runif(1, sqrt(x)/x, 1)), size=1))
+                      
+                      if (always.select.block > 0) {
+                        cvalues[always.select.block] <- 1
+                      }
+                      
                       cvaluesall[[l]] <- cvalues  # split.select.weights
                       
                       splitweights <- rep(NA, sum(pm))
@@ -182,6 +187,11 @@ CvalueOptimizerClassification <-
                     for(l in 1:nsets) {
                       
                       cvalues <- diff(c(0, sort(runif(M-1)), 1))
+                      
+                      if (always.select.block > 0) {
+                        cvalues[always.select.block] <- 0
+                      }
+                      
                       cvaluesall[[l]] <- cvalues  
                       
                       forest <- blockForest(dependent.variable.name = "y", data = data, num.trees = num.trees.pre, 
