@@ -886,9 +886,9 @@ void Forest::setSplitWeightVector(std::vector<std::vector<double>>& split_select
     }
   }
 
-  if (deterministic_varIDs.size() > this->mtry[0]) {
-    throw std::runtime_error("Number of ones in split select weights cannot be larger than mtry.");
-  }
+//  if (deterministic_varIDs.size() > this->mtry[0]) {
+//    throw std::runtime_error("Number of ones in split select weights cannot be larger than mtry.");
+//  }
   if (deterministic_varIDs.size() + split_select_varIDs.size() < mtry[0]) {
     throw std::runtime_error("Too many zeros in split select weights. Need at least mtry variables to split at.");
   }
