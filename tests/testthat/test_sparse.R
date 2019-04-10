@@ -1,6 +1,7 @@
 library(blockForest)
 library(survival)
 library(Matrix)
+library(methods)
 context("blockForest_sparse")
 
 ## Iris sparse data
