@@ -28,14 +28,22 @@
 ##' The group of covariates corresponding to one specific data type is denoted as a 'block'. \cr
 ##' NOTE: We strongly recommend using the variant "BlockForest" (or "block forest")
 ##' in applications. The other four variants performed worse than "BlockForest"
-##' in the analysis by Hornung & Wright (2018). Using 20 real multi-omics data sets Hornung & Wright (2018) compared all
-##' five variants with each other and with Random Survival Forest as existing
+##' in the analysis by Hornung & Wright (2019). Using 20 real multi-omics data sets Hornung & Wright (2019) compared all
+##' five variants with each other and with alternatives, in particular with Random Survival Forest as existing
 ##' reference method. The ranking of the performances of the five variants was as follows
-##' in the comparison study by Hornung & Wright (2018): 1) "BlockForest", 2) "RandomBlock",
+##' in the comparison study by Hornung & Wright (2019): 1) "BlockForest", 2) "RandomBlock",
 ##' 3) "BlockVarSel", 4) "VarProb", 5) "SplitWeights". \cr
 ##' Each of the five variants uses a different split selection algorithm.
-##' For details, see Hornung & Wright (2018). \cr
-##' Note that this R package is a fork of the R package ranger.
+##' For details, see Hornung & Wright (2019). \cr
+##' Note that this R package is a fork of the R package ranger. \cr
+##' NOTE ALSO: Including the clinical block mandatorily in the split point selection can considerably improve the prediction performance.
+##' Whether or not this is the case, depends on the level of predictive information contained in the clinical block.
+##' We recommend trying out including the clinical block mandatorily to see, whether this improves prediction
+##' performance in the particular application. Note that in the case of including the clinical block mandatorily
+##' and having more than only one omics block, "RandomBlock" performed (slightly) better than "BlockForest" in the comparison study by Hornung & Wright (2019). 
+##' Including the clinical block mandatorily can be performed by setting the function argument 'always.select.block'
+##' of 'blockfor()' to the index of the clinical block (e.g., if the clinical block would be the second block in order, we would 
+##' set always.select.block=2).
 ##' 
 ##' @param X Covariate matrix. observations in rows, variables in columns.
 ##' @param y Target variable. If the outcome is binary, this is a factor with
@@ -47,7 +55,7 @@
 ##' @param blocks A list of length equal to the number M of blocks considered. Each
 ##' entry contains the vector of column indices in 'X' of the covariates in one of the M blocks.
 ##' @param block.method Forest variant to use. One of the following: "BlockForest" (default), "RandomBlock", "BlockVarSel", "VarProb", "SplitWeights".
-##' The latter listing is ordered according to the performances of these variants in the comparison study by Hornung & Wright (2018),
+##' The latter listing is ordered according to the performances of these variants in the comparison study by Hornung & Wright (2019),
 ##' with the best variant being listed first.
 ##' @param num.trees Number of trees in the forest.
 ##' @param mtry This is either a number specifying the number of variables sampled for each
@@ -110,7 +118,7 @@
 ##' blockforobj <- blockfor(X, ybin, num.trees = 100, replace = TRUE, blocks=blocks,
 ##'                         nsets = 10, num.trees.pre = 50, splitrule="extratrees", 
 ##'                         block.method = "BlockForest")
-##' # Tuning parameter estimates (see Hornung & Wright (2018)):
+##' # Tuning parameter estimates (see Hornung & Wright (2019)):
 ##' blockforobj$paramvalues
 ##' 
 ##' # Application to survival outcome:
@@ -124,7 +132,7 @@
 ##' @author Roman Hornung, Marvin N. Wright
 ##' @references
 ##' \itemize{
-##'   \item Hornung, R. & Wright, M. N. (2018) Block Forests: random forests for blocks of clinical and omics covariate data. Technical Report, Department of Statistics, University of Munich.
+##'   \item Hornung, R. & Wright, M. N. (2019) Block Forests: random forests for blocks of clinical and omics covariate data. To appear, original version available as Technical Report (Department of Statistics, University of Munich) at: \url{http://epub.ub.uni-muenchen.de/59631}.
 ##'   \item Breiman, L. (2001). Random forests. Mach Learn, 45(1), 5-32. \url{http://dx.doi.org/10.1023/A:1010933404324}. 
 ##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.
 ##' }
