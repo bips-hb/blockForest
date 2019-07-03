@@ -2,7 +2,7 @@ Package: blockForest
 Type: Package
 Title: Block Forests: Random Forests for Blocks of Clinical and Omics
         Covariate Data
-Version: 0.2.2
+Version: 0.2.3
 Date: 2019-07-03
 Author: Roman Hornung, Marvin N. Wright
 Maintainer: Marvin N. Wright <cran@wrig.de>
