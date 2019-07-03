@@ -21,7 +21,7 @@ Description:  A random forest variant 'block forest' ('BlockForest') tailored to
   in applications. The other random forest variants can, however, be consulted for 
   academic purposes, for example, in the context of further methodological 
   developments. 
-  Reference: Hornung, R. & Wright, M. N. (2019) Block Forests: random forests for blocks of clinical and omics covariate data. BMC Bioinformatics 20:358. https://doi.org/10.1186/s12859-019-2942-y.
+  Reference: Hornung, R. & Wright, M. N. (2019) Block Forests: random forests for blocks of clinical and omics covariate data. BMC Bioinformatics 20:358. <doi:10.1186/s12859-019-2942-y>.
 License: GPL-3
 Imports: Rcpp (>= 0.11.2), Matrix, methods, survival
 LinkingTo: Rcpp, RcppEigen
