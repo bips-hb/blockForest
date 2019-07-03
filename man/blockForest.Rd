@@ -136,7 +136,7 @@ blockForest(Species ~ ., iris)
 }
 \references{
 \itemize{
-  \item Hornung, R. & Wright, M. N. (2019) Block Forests: random forests for blocks of clinical and omics covariate data. To appear, original version available as Technical Report (Department of Statistics, University of Munich) at: \url{http://epub.ub.uni-muenchen.de/59631}.
+  \item Hornung, R. & Wright, M. N. (2019) Block Forests: random forests for blocks of clinical and omics covariate data. BMC Bioinformatics 20:358. \url{https://doi.org/10.1186/s12859-019-2942-y}.
   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{http://dx.doi.org/10.18637/jss.v077.i01}.
   \item Schmid, M., Wright, M. N. & Ziegler, A. (2016). On the use of Harrell's C for clinical risk prediction via random survival forests. Expert Syst Appl 63:450-459. \url{http://dx.doi.org/10.1016/j.eswa.2016.07.018}. 
   \item Wright, M. N., Dankowski, T. & Ziegler, A. (2017). Unbiased split variable selection for random survival forests using maximally selected rank statistics. Stat Med. \url{http://dx.doi.org/10.1002/sim.7212}.
