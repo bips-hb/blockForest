@@ -448,8 +448,10 @@ void Forest::grow() {
     std::vector<double>* block_weight_pointer;
     if (block_weights.size() > 1) {
       block_weight_pointer = &block_weights[i];
-    } else {
+    } else if (block_weights.size() == 1) {
       block_weight_pointer = &block_weights[0];
+    } else {
+      block_weight_pointer = 0;
     }
 
     trees[i]->init(data, mtry, dependent_varID, num_samples, tree_seed, &deterministic_varIDs, &split_select_varIDs,
