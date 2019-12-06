@@ -143,7 +143,7 @@ blockfor <-
            nsets = 300, num.trees.pre = 1500, splitrule = "extratrees",
            always.select.block = 0, ...) {
     
-    if(class(y)=="matrix") {
+    if (inherits(y, "matrix")) {
       if(ncol(y)==2) {
         y <- Surv(time=y[,1], event=y[,2])
         model.data <- data.frame(y, X)
@@ -152,11 +152,11 @@ blockfor <-
     else
       model.data <- data.frame(y, X)
     
-    if (class(model.data[, 1]) == "factor") {
+    if (inherits(model.data[, 1], "factor")) {
         treetype <- "Classification"
-    } else if (class(model.data[, 1]) == "numeric") {
+    } else if (inherits(model.data[, 1], "numeric")) {
       treetype <- "Regression"
-    } else if (class(model.data[, 1]) == "Surv") {
+    } else if (inherits(model.data[, 1], "Surv")) {
       treetype <- "Survival"
     } else {
       stop("Unkown response type.")

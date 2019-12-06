@@ -49,7 +49,7 @@
 #' @author Marvin N. Wright
 #' @export
 treeInfo <- function(object, tree = 1) {
-  if (class(object) != "ranger" & class(object) != "holdoutRF" & class(object) != "blockForest") {
+  if (!inherits(object, c("ranger", "blockForest"))) {
     stop("Error: Invalid class of input object.")
   } 
   forest <- object$forest

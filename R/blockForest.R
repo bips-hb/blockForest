@@ -132,7 +132,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
                         classification = NULL) {
   
   ## GenABEL GWA data
-  if ("gwaa.data" %in% class(data)) {
+  if (inherits(data, "gwaa.data")) {
     snp.names <- data@gtdata@snpnames
     snp.data <- data@gtdata@gtps@.Data
     data <- data@phdata
@@ -148,7 +148,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   
   ## Sparse matrix data
   if (inherits(data, "Matrix")) {
-    if (!("dgCMatrix" %in% class(data))) {
+    if (!inherits(data, "dgCMatrix")) {
       stop("Error: Currently only sparse data of class 'dgCMatrix' supported.")
     }
     
@@ -187,7 +187,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     }
   } else {
     formula <- formula(formula)
-    if (class(formula) != "formula") {
+    if (!inherits(formula, "formula")) {
       stop("Error: Invalid formula.")
     }
     data.selected <- parse.formula(formula, data)
@@ -225,7 +225,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     } else {
       treetype <- 3
     }
-  } else if (class(response) == "Surv" || is.data.frame(response) || is.matrix(response)) {
+  } else if (inherits(response, "Surv") || is.data.frame(response) || is.matrix(response)) {
     treetype <- 5
   } else {
     stop("Error: Unsupported type of dependent variable.")
@@ -606,7 +606,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
     } else {
       stop("Error: Unknown value for 'block.method'.") 
     }
-    if (class(blocks) != "list" || !all(sapply(blocks, is.numeric))) {
+    if (!inherits(blocks, "list") || !all(sapply(blocks, is.numeric))) {
       stop("Error: The 'blocks' argument is no list of numeric vectors.")
     }
     if (length(mtry) != length(blocks) & block.method != 3) {
@@ -671,7 +671,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   loaded.forest <- list()
   
   ## Use sparse matrix
-  if ("dgCMatrix" %in% class(data.final)) {
+  if (inherits(data.final, "dgCMatrix")) {
     sparse.data <- data.final
     data.final <- matrix(c(0, 0))
     use.sparse.data <- TRUE

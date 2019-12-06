@@ -24,7 +24,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
                                        verbose = TRUE, inbag.counts = NULL, ...) {
   
   ## GenABEL GWA data
-  if ("gwaa.data" %in% class(data)) {
+  if (inherits(data, "gwaa.data")) {
     snp.names <- data@gtdata@snpnames
     snp.data <- data@gtdata@gtps@.Data
     data <- data@phdata[, -1, drop = FALSE]
@@ -37,7 +37,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
   }
   
   ## Check forest argument
-  if (class(object) != "blockForest.forest") {
+  if (!inherits(object, "blockForest.forest")) {
     stop("Error: Invalid class of input object.")
   } else {
     forest <- object
@@ -246,7 +246,7 @@ predict.blockForest.forest <- function(object, data, predict.all = FALSE,
   block.method <- 1
   
   ## Use sparse matrix
-  if ("dgCMatrix" %in% class(data.final)) {
+  if (inherits(data.final, "dgCMatrix")) {
     sparse.data <- data.final
     data.final <- matrix(c(0, 0))
     use.sparse.data <- TRUE
