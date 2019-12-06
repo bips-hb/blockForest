@@ -32,7 +32,7 @@ predictions <- function(x, ...)  UseMethod("predictions")
 ##' @aliases predictions
 ##' @export
 predictions.blockForest.prediction <- function(x, ...) {
-  if (class(x) != "blockForest.prediction") {
+  if (!inherits(x, "blockForest.prediction")) {
     stop("Object ist no blockForest.prediction object.")
   }
   if (x$treetype == "Classification" || x$treetype == "Regression" || x$treetype == "Probability estimation") {
@@ -63,7 +63,7 @@ predictions.blockForest.prediction <- function(x, ...) {
 ##' @author Marvin N. Wright
 ##' @export
 predictions.blockForest<- function(x, ...) {
-  if (class(x) != "blockForest") {
+  if (!inherits(x, "blockForest")) {
     stop("Object ist no blockForest object.")
   }
   if (x$treetype == "Classification" || x$treetype == "Regression" || x$treetype == "Probability estimation") {

@@ -31,7 +31,7 @@ timepoints <- function(x, ...)  UseMethod("timepoints")
 ##' @author Marvin N. Wright
 ##' @export
 timepoints.blockForest.prediction <- function(x, ...) {
-  if (class(x) != "blockForest.prediction") {
+  if (!inherits(x, "blockForest.prediction")) {
     stop("Object ist no blockForest.prediction object.")
   }
   if (x$treetype != "Survival") {
@@ -55,7 +55,7 @@ timepoints.blockForest.prediction <- function(x, ...) {
 ##' @aliases timepoints
 ##' @export
 timepoints.blockForest <- function(x, ...) {
-  if (class(x) != "blockForest") {
+  if (!inherits(x, "blockForest")) {
     stop("Object ist no blockForest object.")
   }
   if (x$treetype != "Survival") {
