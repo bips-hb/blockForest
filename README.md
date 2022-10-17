@@ -1,5 +1,4 @@
-[![Travis Build Status](https://travis-ci.org/bips-hb/blockForest.svg?branch=master)](https://travis-ci.org/bips-hb/blockForest)
-[![AppVeyor Build Status](https://ci.appveyor.com/api/projects/status/github/bips-hb/blockForest?branch=master&svg=true)](https://ci.appveyor.com/project/mnwright/blockForest)
+[![R-CMD-check](https://github.com/bips-hb/blockForest/workflows/R-CMD-check/badge.svg)](https://github.com/bips-hb/blockForest/actions)
 ## blockForest: Random Forests for Blocks of Clinical and Omics Covariate Data
 Roman Hornung, Marvin N. Wright
 
