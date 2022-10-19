@@ -347,7 +347,7 @@ void Forest::writeOutput() {
     *verbose_out << "Overall OOB prediction error:      " << overall_prediction_error << std::endl;
     *verbose_out << std::endl;
 
-    if (!split_select_weights.empty() & !split_select_weights[0].empty()) {
+    if (!split_select_weights.empty() && !split_select_weights[0].empty()) {
       *verbose_out
           << "Warning: Split select weights used. Variable importance measures are only comparable for variables with equal weights."
           << std::endl;
