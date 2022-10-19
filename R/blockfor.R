@@ -132,9 +132,9 @@
 ##' @author Roman Hornung, Marvin N. Wright
 ##' @references
 ##' \itemize{
-##'   \item Hornung, R. & Wright, M. N. (2019) Block Forests: random forests for blocks of clinical and omics covariate data. BMC Bioinformatics 20:358. \url{https://doi.org/10.1186/s12859-019-2942-y}.
-##'   \item Breiman, L. (2001). Random forests. Mach Learn, 45(1), 5-32. \url{https://doi.org/10.1023/A:1010933404324}. 
-##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \url{https://doi.org/10.18637/jss.v077.i01}.
+##'   \item Hornung, R. & Wright, M. N. (2019) Block Forests: random forests for blocks of clinical and omics covariate data. BMC Bioinformatics 20:358. \doi{10.1186/s12859-019-2942-y}.
+##'   \item Breiman, L. (2001). Random forests. Mach Learn, 45(1), 5-32. \doi{10.1023/A:1010933404324}. 
+##'   \item Wright, M. N. & Ziegler, A. (2017). ranger: A Fast Implementation of Random Forests for High Dimensional Data in C++ and R. J Stat Softw 77:1-17. \doi{10.18637/jss.v077.i01}.
 ##' }
 ##' @import survival
 ##' @export
