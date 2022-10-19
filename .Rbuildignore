@@ -6,3 +6,6 @@
 ^.*\.tar.gz$
 ^cpp\_version$
 ^\.github$
+^blockForest\.Rcheck$
+^blockForest.*\.tar\.gz$
+^blockForest.*\.tgz$

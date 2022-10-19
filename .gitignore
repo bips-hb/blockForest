@@ -9,3 +9,6 @@ src/*.dll
 .cproject
 .project
 .settings/*
+blockForest.Rcheck/
+blockForest*.tar.gz
+blockForest*.tgz
