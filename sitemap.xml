@@ -1,0 +1,15 @@
+<urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>/404.html</loc></url>
+<url><loc>/authors.html</loc></url>
+<url><loc>/index.html</loc></url>
+<url><loc>/reference/blockForest.html</loc></url>
+<url><loc>/reference/blockfor.html</loc></url>
+<url><loc>/reference/index.html</loc></url>
+<url><loc>/reference/predict.blockForest.html</loc></url>
+<url><loc>/reference/predictions.blockForest.html</loc></url>
+<url><loc>/reference/predictions.blockForest.prediction.html</loc></url>
+<url><loc>/reference/timepoints.blockForest.html</loc></url>
+<url><loc>/reference/timepoints.blockForest.prediction.html</loc></url>
+<url><loc>/reference/treeInfo.html</loc></url>
+</urlset>
+
