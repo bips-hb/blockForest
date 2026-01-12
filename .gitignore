@@ -12,3 +12,4 @@ src/*.dll
 blockForest.Rcheck/
 blockForest*.tar.gz
 blockForest*.tgz
+docs

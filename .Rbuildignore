@@ -9,3 +9,6 @@
 ^blockForest\.Rcheck$
 ^blockForest.*\.tar\.gz$
 ^blockForest.*\.tgz$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
