@@ -20,6 +20,10 @@
 #ifndef UTILITY_H_
 #define UTILITY_H_
 
+#ifdef R_BUILD
+#include <Rcpp.h>
+#endif 
+
 #include <vector>
 #include <iostream>
 #include <fstream>
@@ -27,10 +31,6 @@
 #include <random>
 #include <unordered_set>
 #include <unordered_map>
-
-#ifdef R_BUILD
-#include <Rinternals.h>
-#endif
 
 #include "globals.h"
 #include "Data.h"
