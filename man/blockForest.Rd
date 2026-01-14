@@ -138,6 +138,9 @@ and will rarely be considered directly by the user (since parameter tuning
 is required in applications).
 }
 \details{
+By default, blockForest uses all available threads. The default can be changed with: (1) \code{num.threads} in blockForest/blockfor/predict call, (2) environment variable
+R_BLOCKFOREST_NUM_THREADS, (3) \code{options(blockforest.num.threads = N)}, (4) \code{options(Ncpus = N)}, with precedence in that order.
+
 See \code{\link{blockfor}} and the \code{ranger} package.
 }
 \examples{

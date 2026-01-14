@@ -21,6 +21,9 @@
 ##' and will rarely be considered directly by the user (since parameter tuning
 ##' is required in applications).
 ##' 
+##' By default, blockForest uses all available threads. The default can be changed with: (1) \code{num.threads} in blockForest/blockfor/predict call, (2) environment variable
+##' R_BLOCKFOREST_NUM_THREADS, (3) \code{options(blockforest.num.threads = N)}, (4) \code{options(Ncpus = N)}, with precedence in that order.
+##' 
 ##' See \code{\link{blockfor}} and the \code{ranger} package.
 ##' 
 ##' @title blockForest
@@ -359,7 +362,7 @@ blockForest <- function(formula = NULL, data = NULL, num.trees = 500, mtry = NUL
   ## Num threads
   ## Default 0 -> detect from system in C++.
   if (is.null(num.threads)) {
-    num.threads = 0
+    num.threads <- as.integer(Sys.getenv("R_BLOCKFOREST_NUM_THREADS", getOption("blockforest.num.threads", getOption("Ncpus", 0L))))
   } else if (!is.numeric(num.threads) || num.threads < 0) {
     stop("Error: Invalid value for num.threads")
   }
