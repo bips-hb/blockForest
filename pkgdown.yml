@@ -2,7 +2,7 @@ pandoc: 3.1.11
 pkgdown: 2.2.0
 pkgdown_sha: ~
 articles: {}
-last_built: 2026-01-14T07:37Z
+last_built: 2026-01-14T08:41Z
 urls:
   reference: https://bips-hb.github.io/blockForest/reference
   article: https://bips-hb.github.io/blockForest/articles

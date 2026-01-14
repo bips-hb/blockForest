@@ -309,6 +309,12 @@ Object of class `blockForest` with elements
 
 ## Details
 
+By default, blockForest uses all available threads. The default can be
+changed with: (1) `num.threads` in blockForest/blockfor/predict call,
+(2) environment variable R_BLOCKFOREST_NUM_THREADS, (3)
+`options(blockforest.num.threads = N)`, (4) `options(Ncpus = N)`, with
+precedence in that order.
+
 See
 [`blockfor`](https://bips-hb.github.io/blockForest/reference/blockfor.md)
 and the `ranger` package.

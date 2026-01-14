@@ -283,7 +283,9 @@ where p_m denotes the number of variables in the m-th block (m = 1, ..., M) and 
 </dl></div>
     <div class="section level2">
     <h2 id="details">Details<a class="anchor" aria-label="anchor" href="#details"></a></h2>
-    <p>See <code><a href="blockfor.html">blockfor</a></code> and the <code>ranger</code> package.</p>
+    <p>By default, blockForest uses all available threads. The default can be changed with: (1) <code>num.threads</code> in blockForest/blockfor/predict call, (2) environment variable
+R_BLOCKFOREST_NUM_THREADS, (3) <code>options(blockforest.num.threads = N)</code>, (4) <code>options(Ncpus = N)</code>, with precedence in that order.</p>
+<p>See <code><a href="blockfor.html">blockfor</a></code> and the <code>ranger</code> package.</p>
     </div>
     <div class="section level2">
     <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a></h2>
